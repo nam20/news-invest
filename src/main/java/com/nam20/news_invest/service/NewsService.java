@@ -27,4 +27,8 @@ public class NewsService {
             newsRepository.save(news);
         }
     }
+
+    public List<News> retrieveNews() {
+        return newsRepository.findAll();
+    }
 }
