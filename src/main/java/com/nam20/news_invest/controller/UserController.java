@@ -3,12 +3,13 @@ package com.nam20.news_invest.controller;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
@@ -17,37 +18,29 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
-    public List<User> retrieveUsers() {
-        return userService.retrieveUsers();
+    @GetMapping
+    public ResponseEntity<List<User>> retrieveUsers() {
+        return ResponseEntity.ok(userService.retrieveUsers());
     }
 
-    @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable Long id) {
-        return userService.retrieveUser(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<User> retrieveUser(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.retrieveUser(id));
     }
 
-    @PostMapping("/users")
-    public User saveUser(@Valid @RequestBody User user) {
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
-        return userService.saveUser(user);
+    @PostMapping
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        User updateUser = userService.retrieveUser(id);
-
-        updateUser.setName(user.getName());
-        updateUser.setEmail(user.getEmail());
-        updateUser.setPassword(user.getPassword());
-        updateUser.setUpdatedAt(LocalDateTime.now());
-
-        return userService.updateUser(updateUser);
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
+        return ResponseEntity.ok(userService.updateUser(id, user));
     }
 }

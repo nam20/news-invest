@@ -1,6 +1,7 @@
 package com.nam20.news_invest.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,12 +13,14 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 4 , message = "Name should have at least 4 characters")
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
     private String email;
 
+    @Size(min = 8 , message = "Password should have at least 8 characters")
     @Column(nullable = false)
     private String password;
 
