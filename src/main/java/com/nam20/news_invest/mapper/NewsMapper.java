@@ -7,9 +7,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class NewsMapper {
-    private static ModelMapper modelMapper = new ModelMapper();
 
-    public static News toEntity(NewsApiResponseArticle article) {
+    private final ModelMapper modelMapper;
+
+    public NewsMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    public News toEntity(NewsApiResponseArticle article) {
         return modelMapper.map(article, News.class);
     }
 }

@@ -13,17 +13,20 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
     private final ApiClientService apiClientService;
+    private final NewsMapper newsMapper;
 
-    public NewsService(NewsRepository newsRepository, ApiClientService apiClientService) {
+    public NewsService(NewsRepository newsRepository, ApiClientService apiClientService,
+                       NewsMapper newsMapper) {
         this.newsRepository = newsRepository;
         this.apiClientService = apiClientService;
+        this.newsMapper = newsMapper;
     }
 
     public void insertNews() {
         List<NewsApiResponseArticle> articles = apiClientService.retrieveNews().getArticles();
 
         for (NewsApiResponseArticle article : articles) {
-            News news = NewsMapper.toEntity(article);
+            News news = newsMapper.toEntity(article);
             newsRepository.save(news);
         }
     }
