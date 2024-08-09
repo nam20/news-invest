@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,12 +22,8 @@ public class UserService {
     }
 
     public User retrieveUser(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-
-        if (optionalUser.isEmpty())
-            throw new ResourceNotFoundException("id: " + id);
-
-        return optionalUser.get();
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
     }
 
     public User createUser(User user) {
@@ -38,21 +33,15 @@ public class UserService {
     }
 
     public void deleteUser(Long id) {
-        Optional<User> optionalUser = userRepository.findById(id);
-
-        if (optionalUser.isEmpty())
-            throw new ResourceNotFoundException("id: " + id);
+        userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
         userRepository.deleteById(id);
     }
 
     public User updateUser(Long id, User user) {
-        Optional<User> optionalUser = userRepository.findById(id);
-
-        if (optionalUser.isEmpty())
-            throw new ResourceNotFoundException("id: " + id);
-
-        User existingUser = optionalUser.get();
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
