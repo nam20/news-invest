@@ -1,7 +1,9 @@
 package com.nam20.news_invest.service;
 
+import com.nam20.news_invest.dto.UserDto;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
+import com.nam20.news_invest.mapper.UserMapper;
 import com.nam20.news_invest.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,24 +14,34 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
-    public List<User> retrieveUsers() {
-        return userRepository.findAll();
+    public List<UserDto> retrieveUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 
-    public User retrieveUser(Long id) {
-        return userRepository.findById(id)
+    public UserDto retrieveUser(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
+
+        return userMapper.toDto(user);
     }
 
-    public User createUser(User user) {
+    public UserDto createUser(User user) {
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
-        return userRepository.save(user);
+
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toDto(savedUser);
     }
 
     public void deleteUser(Long id) {
@@ -39,7 +51,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(Long id, User user) {
+    public UserDto updateUser(Long id, User user) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
@@ -48,6 +60,8 @@ public class UserService {
         existingUser.setPassword(user.getPassword());
         existingUser.setUpdatedAt(LocalDateTime.now());
 
-        return userRepository.save(existingUser);
+        User updatedUser = userRepository.save(existingUser);
+
+        return userMapper.toDto(updatedUser);
     }
 }
