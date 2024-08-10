@@ -9,26 +9,20 @@ import com.nam20.news_invest.mapper.CommentMapper;
 import com.nam20.news_invest.repository.CommentRepository;
 import com.nam20.news_invest.repository.PostRepository;
 import com.nam20.news_invest.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-
-    public CommentService(CommentRepository commentRepository, CommentMapper commentMapper,
-                          UserRepository userRepository, PostRepository postRepository) {
-        this.commentRepository = commentRepository;
-        this.commentMapper = commentMapper;
-        this.userRepository = userRepository;
-        this.postRepository = postRepository;
-    }
 
     public List<CommentDto> retrieveComments() {
         return commentRepository.findAll()

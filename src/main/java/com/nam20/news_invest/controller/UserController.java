@@ -10,24 +10,20 @@ import com.nam20.news_invest.service.CommentService;
 import com.nam20.news_invest.service.PostService;
 import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
 
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
-
-    public UserController(UserService userService, PostService postService, CommentService commentService) {
-        this.userService = userService;
-        this.postService = postService;
-        this.commentService = commentService;
-    }
 
     @GetMapping
     public ResponseEntity<List<UserDto>> retrieveUsers() {

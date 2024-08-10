@@ -7,6 +7,7 @@ import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.mapper.PostMapper;
 import com.nam20.news_invest.repository.PostRepository;
 import com.nam20.news_invest.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,17 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final UserRepository userRepository;
-
-    public PostService(PostRepository postRepository, PostMapper postMapper, UserRepository userRepository) {
-        this.postRepository = postRepository;
-        this.postMapper = postMapper;
-        this.userRepository = userRepository;
-    }
 
     public List<PostDto> retrievePosts() {
         return postRepository.findAll()
