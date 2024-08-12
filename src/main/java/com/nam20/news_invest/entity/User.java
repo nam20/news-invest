@@ -23,10 +23,10 @@ public class User {
     private Long id;
 
     @Size(min = 4 , message = "Name should have at least 4 characters")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Size(min = 8 , message = "Password should have at least 8 characters")
