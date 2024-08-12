@@ -3,6 +3,9 @@ package com.nam20.news_invest.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"user", "post", "parentComment", "replies"})
+@EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +35,10 @@ public class Comment {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @LastModifiedDate
     private LocalDateTime updatedAt;
 
     @ManyToOne
@@ -46,14 +50,11 @@ public class Comment {
     private List<Comment> replies;
 
     @Builder
-    public Comment(Long id, User user, Post post, String content, LocalDateTime createdAt,
-                   LocalDateTime updatedAt, Comment parentComment) {
+    public Comment(Long id, User user, Post post, String content, Comment parentComment) {
         this.id = id;
         this.user = user;
         this.post = post;
         this.content = content;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.parentComment = parentComment;
     }
 }
