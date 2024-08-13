@@ -47,10 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             User user = customUserDetailsService.loadUserByUsername(username);
 
-            if (user != null) {
-                request.setAttribute("currentUser", user);
-            }
-
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(user, null, authorities);
 
