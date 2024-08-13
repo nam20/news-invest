@@ -1,11 +1,14 @@
 package com.nam20.news_invest.service;
 
+import com.nam20.news_invest.dto.RegisterDto;
 import com.nam20.news_invest.dto.UserDto;
 import com.nam20.news_invest.entity.User;
+import com.nam20.news_invest.exception.AlreadyExistsException;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.mapper.UserMapper;
 import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +20,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public List<UserDto> retrieveUsers() {
         return userRepository.findAll()
@@ -32,9 +36,21 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public UserDto createUser(User user) {
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
+    public UserDto createUser(RegisterDto registerDto) {
+
+        if (userRepository.existsByName(registerDto.getName())) {
+            throw new AlreadyExistsException("name is taken");
+        }
+
+        if (userRepository.existsByEmail(registerDto.getEmail())) {
+            throw new AlreadyExistsException("email is taken");
+        }
+
+        User user = User.builder()
+                .name(registerDto.getName())
+                .email(registerDto.getEmail())
+                .password(passwordEncoder.encode(registerDto.getPassword()))
+                .build();
 
         User savedUser = userRepository.save(user);
 
@@ -60,5 +76,12 @@ public class UserService {
         User updatedUser = userRepository.save(existingUser);
 
         return userMapper.toDto(updatedUser);
+    }
+
+    public UserDto retrieveUserByName(String name) {
+        User user = userRepository.findByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("name: " + name));
+
+        return userMapper.toDto(user);
     }
 }

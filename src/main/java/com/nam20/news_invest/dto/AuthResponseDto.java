@@ -7,10 +7,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class AuthResponseDto {
-    private String accessToken;
-    private String tokenType = "Bearer ";
+    private String message;
+    private UserDto user;
+    private String token;
 
-    public AuthResponseDto(String accessToken) {
-        this.accessToken = accessToken;
+    public AuthResponseDto(String message, UserDto user, String token) {
+        this.message = message;
+        this.user = user;
+        this.token = token;
     }
 }
