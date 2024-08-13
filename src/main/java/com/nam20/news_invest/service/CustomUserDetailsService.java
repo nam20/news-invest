@@ -2,6 +2,7 @@ package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.repository.UserRepository;
+import com.nam20.news_invest.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,10 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 new SimpleGrantedAuthority("user")
         );
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getName(),
-                user.getPassword(),
-                authorities
-        );
+        return new CustomUserDetails(user, authorities);
     }
 }

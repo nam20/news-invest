@@ -1,5 +1,6 @@
 package com.nam20.news_invest.security;
 
+import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,6 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .collect(Collectors.toList());
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+
+            if (userDetails instanceof CustomUserDetails) {
+                User user = ((CustomUserDetails) userDetails).getUser();
+                request.setAttribute("currentUser", user);
+            }
+
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
