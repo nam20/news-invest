@@ -1,11 +1,14 @@
 package com.nam20.news_invest.controller;
 
+import com.nam20.news_invest.dto.CommentCreateRequest;
 import com.nam20.news_invest.dto.CommentDto;
-import com.nam20.news_invest.entity.Comment;
+import com.nam20.news_invest.dto.CommentUpdateRequest;
+import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,16 +30,26 @@ public class CommentController {
         return ResponseEntity.ok(commentService.retrieveComment(id));
     }
 
-    // TODO: 시큐리티 적용 후 변경
-    @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long id, @Valid @RequestBody Comment comment) {
-        return ResponseEntity.ok(commentService.updateComment(id, comment));
+    @PostMapping
+    public ResponseEntity<CommentDto> createComment(
+            @Valid @RequestBody CommentCreateRequest requestDto,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(commentService.createComment(requestDto, user));
     }
 
-    // TODO: 시큐리티 적용 후 변경
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentDto> updateComment(
+            @PathVariable Long id,
+            @Valid @RequestBody CommentUpdateRequest requestDto,
+            @AuthenticationPrincipal User user
+            ) {
+        return ResponseEntity.ok(commentService.updateComment(id, requestDto, user));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        commentService.deleteComment(id, user);
         return ResponseEntity.noContent().build();
     }
 }

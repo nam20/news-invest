@@ -1,18 +1,18 @@
 package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.dto.PostDto;
+import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.entity.Post;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
+import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
 import com.nam20.news_invest.mapper.PostMapper;
 import com.nam20.news_invest.repository.PostRepository;
 import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -43,34 +43,42 @@ public class PostService {
                 .toList();
     }
 
-    public PostDto createPost(Long userId, Post post) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("id: " + userId));
-
-        post.setUser(user);
-        post.setCreatedAt(LocalDateTime.now());
-        post.setUpdatedAt(LocalDateTime.now());
+    public PostDto createPost(PostRequest createRequest, User user) {
+        Post post = Post.builder()
+                .title(createRequest.getTitle())
+                .content(createRequest.getContent())
+                .category(createRequest.getCategory())
+                .user(user)
+                .build();
 
         Post savedPost = postRepository.save(post);
 
         return postMapper.toDto(savedPost);
     }
 
-    public void deletePost(Long id) {
-        postRepository.findById(id)
+    public void deletePost(Long id, User user) {
+
+        Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
+
+        if (!post.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedOwnershipException("id: " + id);
+        }
 
         postRepository.deleteById(id);
     }
 
-    public PostDto updatePost(Long id, Post post) {
+    public PostDto updatePost(Long id, PostRequest updateRequest, User user) {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
-        existingPost.setTitle(post.getTitle());
-        existingPost.setContent(post.getContent());
-        existingPost.setCategory(post.getCategory());
-        existingPost.setUpdatedAt(LocalDateTime.now());
+        if (!existingPost.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedOwnershipException("id: " + id);
+        }
+
+        existingPost.setTitle(updateRequest.getTitle());
+        existingPost.setContent(updateRequest.getContent());
+        existingPost.setCategory(updateRequest.getCategory());
 
         Post updatedPost = postRepository.save(existingPost);
 

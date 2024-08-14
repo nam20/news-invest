@@ -2,16 +2,17 @@ package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.dto.RegisterDto;
 import com.nam20.news_invest.dto.UserDto;
+import com.nam20.news_invest.dto.UserUpdateRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.AlreadyExistsException;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
+import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
 import com.nam20.news_invest.mapper.UserMapper;
 import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -57,21 +58,28 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
-    public void deleteUser(Long id) {
-        userRepository.findById(id)
+    public void deleteUser(Long id, User currentUser) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
+
+        if (!user.getId().equals(currentUser.getId())) {
+            throw new UnauthorizedOwnershipException("id: " + id);
+        }
 
         userRepository.deleteById(id);
     }
 
-    public UserDto updateUser(Long id, User user) {
+    public UserDto updateUser(Long id, UserUpdateRequest requestDto, User currentUser) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
-        existingUser.setName(user.getName());
-        existingUser.setEmail(user.getEmail());
-        existingUser.setPassword(user.getPassword());
-        existingUser.setUpdatedAt(LocalDateTime.now());
+        if (!currentUser.getId().equals(existingUser.getId())) {
+            throw new UnauthorizedOwnershipException("id: " + id);
+        }
+
+        existingUser.setName(requestDto.getName());
+        existingUser.setEmail(requestDto.getEmail());
+        existingUser.setPassword(requestDto.getPassword());
 
         User updatedUser = userRepository.save(existingUser);
 

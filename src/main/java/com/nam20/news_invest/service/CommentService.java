@@ -1,10 +1,13 @@
 package com.nam20.news_invest.service;
 
+import com.nam20.news_invest.dto.CommentCreateRequest;
 import com.nam20.news_invest.dto.CommentDto;
+import com.nam20.news_invest.dto.CommentUpdateRequest;
 import com.nam20.news_invest.entity.Comment;
 import com.nam20.news_invest.entity.Post;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
+import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
 import com.nam20.news_invest.mapper.CommentMapper;
 import com.nam20.news_invest.repository.CommentRepository;
 import com.nam20.news_invest.repository.PostRepository;
@@ -12,7 +15,6 @@ import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -45,38 +47,54 @@ public class CommentService {
                 .toList();
     }
 
-    public CommentDto createComment(Long userId, Long postId, Comment comment) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("id " + userId));
+    public CommentDto createComment(CommentCreateRequest requestDto, User user) {
+        Long postId = requestDto.getPostId();
+        Long parentCommentId = requestDto.getParentCommentId();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + postId));
 
-        comment.setUser(user);
-        comment.setPost(post);
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.setUpdatedAt(LocalDateTime.now());
+        Comment.CommentBuilder commentBuilder = Comment.builder()
+                .content(requestDto.getContent())
+                .user(user)
+                .post(post);
+
+        if (parentCommentId != null) {
+            Comment parentComment = commentRepository.findById(parentCommentId)
+                    .orElse(null);
+
+            commentBuilder.parentComment(parentComment);
+        }
+
+        Comment comment = commentBuilder.build();
 
         Comment savedComment = commentRepository.save(comment);
 
         return commentMapper.toDto(savedComment);
     }
 
-    public CommentDto updateComment(Long id, Comment comment) {
+    public CommentDto updateComment(Long id, CommentUpdateRequest requestDto, User user) {
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
 
-        existingComment.setContent(comment.getContent());
-        existingComment.setUpdatedAt(LocalDateTime.now());
+        if (!existingComment.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedOwnershipException("id " + id);
+        }
+
+        existingComment.setContent(requestDto.getContent());
 
         Comment updatedComment = commentRepository.save(existingComment);
 
         return commentMapper.toDto(updatedComment);
     }
 
-    public void deleteComment(Long id) {
-        commentRepository.findById(id)
+    public void deleteComment(Long id, User user) {
+        Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
+
+        if (!comment.getUser().getId().equals(user.getId())) {
+            throw new UnauthorizedOwnershipException("id " + id);
+        }
 
         commentRepository.deleteById(id);
     }

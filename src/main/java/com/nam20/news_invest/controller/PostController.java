@@ -1,13 +1,13 @@
 package com.nam20.news_invest.controller;
 
 import com.nam20.news_invest.dto.PostDto;
-import com.nam20.news_invest.entity.Post;
+import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.PostService;
-import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,20 +25,29 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> retrievePost(Long id) {
+    public ResponseEntity<PostDto> retrievePost(@PathVariable Long id) {
         return ResponseEntity.ok(postService.retrievePost(id));
     }
 
-    // TODO: 시큐리티 적용 후 변경
+    @PostMapping
+    public ResponseEntity<PostDto> createPost(
+            @Valid @RequestBody PostRequest createRequest,
+            @AuthenticationPrincipal User user
+    ) {
+        return ResponseEntity.ok(postService.createPost(createRequest, user));
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
+    public ResponseEntity<Void> deletePost(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        postService.deletePost(id, user);
         return ResponseEntity.noContent().build();
     }
 
-    // TODO: 시큐리티 적용 후 변경
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(@PathVariable Long id, @Valid @RequestBody Post post) {
-        return ResponseEntity.ok(postService.updatePost(id, post));
+    public ResponseEntity<PostDto> updatePost(
+            @PathVariable Long id,
+            @Valid @RequestBody PostRequest updateRequest,
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(postService.updatePost(id, updateRequest, user));
     }
 }

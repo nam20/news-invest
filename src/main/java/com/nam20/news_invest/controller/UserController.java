@@ -3,8 +3,7 @@ package com.nam20.news_invest.controller;
 import com.nam20.news_invest.dto.CommentDto;
 import com.nam20.news_invest.dto.PostDto;
 import com.nam20.news_invest.dto.UserDto;
-import com.nam20.news_invest.entity.Comment;
-import com.nam20.news_invest.entity.Post;
+import com.nam20.news_invest.dto.UserUpdateRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
 import com.nam20.news_invest.service.PostService;
@@ -12,6 +11,7 @@ import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,14 +36,17 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        userService.deleteUser(id, user);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-        return ResponseEntity.ok(userService.updateUser(id, user));
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UserUpdateRequest requestDto,
+            @AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(userService.updateUser(id, requestDto, user));
     }
 
     @GetMapping("/{id}/posts")
@@ -56,16 +59,4 @@ public class UserController {
         return ResponseEntity.ok(commentService.retrieveCommentsByUserId(id));
     }
 
-    // TODO: 시큐리티 적용 후 변경
-    @PostMapping("/{id}/posts")
-    public ResponseEntity<PostDto> createPost(@PathVariable Long id, @Valid @RequestBody Post post) {
-        return ResponseEntity.ok(postService.createPost(id, post));
-    }
-
-    // TODO: 시큐리티 적용 후 변경
-    @PostMapping("/{userId}/posts/{postId}/comments")
-    public ResponseEntity<CommentDto> createComment(@PathVariable Long userId, @PathVariable Long postId,
-                                                 @Valid @RequestBody Comment comment) {
-        return ResponseEntity.ok(commentService.createComment(userId, postId, comment));
-    }
 }
