@@ -3,11 +3,10 @@ package com.nam20.news_invest.dto;
 import lombok.*;
 
 @Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+@RequiredArgsConstructor
 public class RegisterRequest {
-    private String name;
-    private String email;
-    private String password;
+    private final String name;
+    private final String email;
+    private final String password;
 }

@@ -5,19 +5,9 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@RequiredArgsConstructor
 public class NewsApiResponse {
-
-    private String status;
-    private int totalResults;
-    private List<NewsApiResponseArticle> articles;
-
-    @Builder
-    public NewsApiResponse(String status, int totalResults, List<NewsApiResponseArticle> articles) {
-        this.status = status;
-        this.totalResults = totalResults;
-        this.articles = articles;
-    }
+    private final String status;
+    private final int totalResults;
+    private final List<NewsApiResponseArticle> articles;
 }
