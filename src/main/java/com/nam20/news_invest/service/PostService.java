@@ -76,9 +76,8 @@ public class PostService {
             throw new UnauthorizedOwnershipException("id: " + id);
         }
 
-        existingPost.setTitle(updateRequest.getTitle());
-        existingPost.setContent(updateRequest.getContent());
-        existingPost.setCategory(updateRequest.getCategory());
+        existingPost.updateDetails(updateRequest.getTitle(),
+                updateRequest.getContent(), updateRequest.getCategory());
 
         Post updatedPost = postRepository.save(existingPost);
 

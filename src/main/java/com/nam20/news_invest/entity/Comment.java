@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "comments")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"user", "post", "parentComment", "replies"})
 @EntityListeners(AuditingEntityListener.class)
@@ -56,5 +55,9 @@ public class Comment {
         this.post = post;
         this.content = content;
         this.parentComment = parentComment;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 }

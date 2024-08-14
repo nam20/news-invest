@@ -13,7 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "posts")
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(exclude = {"user", "comments"})
 @EntityListeners(AuditingEntityListener.class)
@@ -49,6 +48,12 @@ public class Post {
     public Post(Long id, User user, String title, String content, String category) {
         this.id = id;
         this.user = user;
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
+
+    public void updateDetails(String title, String content, String category) {
         this.title = title;
         this.content = content;
         this.category = category;

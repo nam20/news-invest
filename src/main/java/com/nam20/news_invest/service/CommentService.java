@@ -81,7 +81,7 @@ public class CommentService {
             throw new UnauthorizedOwnershipException("id " + id);
         }
 
-        existingComment.setContent(requestDto.getContent());
+        existingComment.updateContent(requestDto.getContent());
 
         Comment updatedComment = commentRepository.save(existingComment);
 
