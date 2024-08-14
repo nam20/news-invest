@@ -8,7 +8,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class CommentDto {
+public class CommentResponse {
 
     private Long id;
     private Long userId;
@@ -17,11 +17,11 @@ public class CommentDto {
     private String createdAt;
     private String updatedAt;
     private Long parentCommentId;
-    private List<CommentDto> replies;
+    private List<CommentResponse> replies;
 
     @Builder
-    public CommentDto(Long id, Long userId, Long postId, String content, String createdAt,
-                      String updatedAt, Long parentCommentId, List<CommentDto> replies) {
+    public CommentResponse(Long id, Long userId, Long postId, String content, String createdAt,
+                           String updatedAt, Long parentCommentId, List<CommentResponse> replies) {
         this.id = id;
         this.userId = userId;
         this.postId = postId;

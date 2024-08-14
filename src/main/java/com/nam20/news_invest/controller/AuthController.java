@@ -26,28 +26,28 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDto> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
 
-        UserDto userDto = userService.createUser(registerDto);
-        String token = retrieveToken(registerDto.getName(), registerDto.getPassword());
+        UserResponse userResponse = userService.createUser(registerRequest);
+        String token = retrieveToken(registerRequest.getName(), registerRequest.getPassword());
 
-        AuthResponseDto responseDto = new AuthResponseDto(
+        AuthResponse responseDto = new AuthResponse(
                 "User registered successfully",
-                userDto, token
+                userResponse, token
         );
 
         return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
 
-        String token = retrieveToken(loginDto.getName(), loginDto.getPassword());
-        UserDto userDto = userService.retrieveUserByName(loginDto.getName());
+        String token = retrieveToken(loginRequest.getName(), loginRequest.getPassword());
+        UserResponse userResponse = userService.retrieveUserByName(loginRequest.getName());
 
-        AuthResponseDto responseDto = new AuthResponseDto(
+        AuthResponse responseDto = new AuthResponse(
                 "User logged in successfully",
-                userDto, token
+                userResponse, token
         );
 
         return ResponseEntity.ok(responseDto);

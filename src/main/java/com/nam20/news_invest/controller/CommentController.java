@@ -1,7 +1,7 @@
 package com.nam20.news_invest.controller;
 
 import com.nam20.news_invest.dto.CommentCreateRequest;
-import com.nam20.news_invest.dto.CommentDto;
+import com.nam20.news_invest.dto.CommentResponse;
 import com.nam20.news_invest.dto.CommentUpdateRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
@@ -21,17 +21,17 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<List<CommentDto>> retrieveComments() {
+    public ResponseEntity<List<CommentResponse>> retrieveComments() {
         return ResponseEntity.ok(commentService.retrieveComments());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommentDto> retrieveComment(@PathVariable Long id) {
+    public ResponseEntity<CommentResponse> retrieveComment(@PathVariable Long id) {
         return ResponseEntity.ok(commentService.retrieveComment(id));
     }
 
     @PostMapping
-    public ResponseEntity<CommentDto> createComment(
+    public ResponseEntity<CommentResponse> createComment(
             @Valid @RequestBody CommentCreateRequest requestDto,
             @AuthenticationPrincipal User user
     ) {
@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CommentDto> updateComment(
+    public ResponseEntity<CommentResponse> updateComment(
             @PathVariable Long id,
             @Valid @RequestBody CommentUpdateRequest requestDto,
             @AuthenticationPrincipal User user

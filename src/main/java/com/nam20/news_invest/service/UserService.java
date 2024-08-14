@@ -1,7 +1,7 @@
 package com.nam20.news_invest.service;
 
-import com.nam20.news_invest.dto.RegisterDto;
-import com.nam20.news_invest.dto.UserDto;
+import com.nam20.news_invest.dto.RegisterRequest;
+import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.dto.UserUpdateRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.AlreadyExistsException;
@@ -23,34 +23,34 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserDto> retrieveUsers() {
+    public List<UserResponse> retrieveUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
     }
 
-    public UserDto retrieveUser(Long id) {
+    public UserResponse retrieveUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
         return userMapper.toDto(user);
     }
 
-    public UserDto createUser(RegisterDto registerDto) {
+    public UserResponse createUser(RegisterRequest registerRequest) {
 
-        if (userRepository.existsByName(registerDto.getName())) {
+        if (userRepository.existsByName(registerRequest.getName())) {
             throw new AlreadyExistsException("name is taken");
         }
 
-        if (userRepository.existsByEmail(registerDto.getEmail())) {
+        if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new AlreadyExistsException("email is taken");
         }
 
         User user = User.builder()
-                .name(registerDto.getName())
-                .email(registerDto.getEmail())
-                .password(passwordEncoder.encode(registerDto.getPassword()))
+                .name(registerRequest.getName())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -69,7 +69,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserDto updateUser(Long id, UserUpdateRequest requestDto, User currentUser) {
+    public UserResponse updateUser(Long id, UserUpdateRequest requestDto, User currentUser) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
@@ -86,7 +86,7 @@ public class UserService {
         return userMapper.toDto(updatedUser);
     }
 
-    public UserDto retrieveUserByName(String name) {
+    public UserResponse retrieveUserByName(String name) {
         User user = userRepository.findByName(name)
                 .orElseThrow(() -> new ResourceNotFoundException("name: " + name));
 

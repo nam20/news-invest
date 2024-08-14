@@ -6,12 +6,12 @@ import lombok.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class AuthResponseDto {
+public class AuthResponse {
     private String message;
-    private UserDto user;
+    private UserResponse user;
     private String token;
 
-    public AuthResponseDto(String message, UserDto user, String token) {
+    public AuthResponse(String message, UserResponse user, String token) {
         this.message = message;
         this.user = user;
         this.token = token;

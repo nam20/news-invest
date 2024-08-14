@@ -1,8 +1,8 @@
 package com.nam20.news_invest.controller;
 
-import com.nam20.news_invest.dto.CommentDto;
-import com.nam20.news_invest.dto.PostDto;
-import com.nam20.news_invest.dto.UserDto;
+import com.nam20.news_invest.dto.CommentResponse;
+import com.nam20.news_invest.dto.PostResponse;
+import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.dto.UserUpdateRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
@@ -26,12 +26,12 @@ public class UserController {
     private final CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> retrieveUsers() {
+    public ResponseEntity<List<UserResponse>> retrieveUsers() {
         return ResponseEntity.ok(userService.retrieveUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> retrieveUser(@PathVariable Long id) {
+    public ResponseEntity<UserResponse> retrieveUser(@PathVariable Long id) {
         return ResponseEntity.ok(userService.retrieveUser(id));
     }
 
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDto> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest requestDto,
             @AuthenticationPrincipal User user) {
@@ -50,12 +50,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}/posts")
-    public ResponseEntity<List<PostDto>> retrievePosts(@PathVariable Long id) {
+    public ResponseEntity<List<PostResponse>> retrievePosts(@PathVariable Long id) {
         return ResponseEntity.ok(postService.retrievePostsByUserId(id));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<List<CommentDto>> retrieveComments(@PathVariable Long id) {
+    public ResponseEntity<List<CommentResponse>> retrieveComments(@PathVariable Long id) {
         return ResponseEntity.ok(commentService.retrieveCommentsByUserId(id));
     }
 

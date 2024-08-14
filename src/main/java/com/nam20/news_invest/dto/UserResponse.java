@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class UserDto {
+public class UserResponse {
 
     private Long id;
     private String name;
@@ -17,7 +17,7 @@ public class UserDto {
     private LocalDateTime updatedAt;
 
     @Builder
-    public UserDto(Long id, String name, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserResponse(Long id, String name, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
         this.email = email;

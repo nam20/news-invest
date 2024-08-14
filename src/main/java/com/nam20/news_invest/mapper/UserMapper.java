@@ -1,6 +1,6 @@
 package com.nam20.news_invest.mapper;
 
-import com.nam20.news_invest.dto.UserDto;
+import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -12,7 +12,7 @@ public class UserMapper {
 
     private final ModelMapper modelMapper;
 
-    public UserDto toDto(User user) {
-        return modelMapper.map(user, UserDto.class);
+    public UserResponse toDto(User user) {
+        return modelMapper.map(user, UserResponse.class);
     }
 }

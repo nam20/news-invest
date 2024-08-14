@@ -9,7 +9,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class PostDto {
+public class PostResponse {
 
     private Long id;
     private Long userId;
@@ -18,11 +18,11 @@ public class PostDto {
     private String category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CommentDto> comments;
+    private List<CommentResponse> comments;
 
     @Builder
-    public PostDto(Long id, Long userId, String title, String content, String category,
-                   LocalDateTime createdAt, LocalDateTime updatedAt, List<CommentDto> comments) {
+    public PostResponse(Long id, Long userId, String title, String content, String category,
+                        LocalDateTime createdAt, LocalDateTime updatedAt, List<CommentResponse> comments) {
         this.id = id;
         this.userId = userId;
         this.title = title;

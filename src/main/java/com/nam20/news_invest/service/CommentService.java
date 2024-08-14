@@ -1,7 +1,7 @@
 package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.dto.CommentCreateRequest;
-import com.nam20.news_invest.dto.CommentDto;
+import com.nam20.news_invest.dto.CommentResponse;
 import com.nam20.news_invest.dto.CommentUpdateRequest;
 import com.nam20.news_invest.entity.Comment;
 import com.nam20.news_invest.entity.Post;
@@ -26,28 +26,28 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
-    public List<CommentDto> retrieveComments() {
+    public List<CommentResponse> retrieveComments() {
         return commentRepository.findAll()
                 .stream()
                 .map(commentMapper::toDto)
                 .toList();
     }
 
-    public CommentDto retrieveComment(Long id) {
+    public CommentResponse retrieveComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
 
         return commentMapper.toDto(comment);
     }
 
-    public List<CommentDto> retrieveCommentsByUserId(Long postId) {
+    public List<CommentResponse> retrieveCommentsByUserId(Long postId) {
         return commentRepository.findByUserId(postId)
                 .stream()
                 .map(commentMapper::toDto)
                 .toList();
     }
 
-    public CommentDto createComment(CommentCreateRequest requestDto, User user) {
+    public CommentResponse createComment(CommentCreateRequest requestDto, User user) {
         Long postId = requestDto.getPostId();
         Long parentCommentId = requestDto.getParentCommentId();
 
@@ -73,7 +73,7 @@ public class CommentService {
         return commentMapper.toDto(savedComment);
     }
 
-    public CommentDto updateComment(Long id, CommentUpdateRequest requestDto, User user) {
+    public CommentResponse updateComment(Long id, CommentUpdateRequest requestDto, User user) {
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
 

@@ -6,7 +6,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-public class LoginDto {
+public class LoginRequest {
     private String name;
     private String password;
 }

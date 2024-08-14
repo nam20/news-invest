@@ -1,6 +1,6 @@
 package com.nam20.news_invest.service;
 
-import com.nam20.news_invest.dto.PostDto;
+import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.entity.Post;
 import com.nam20.news_invest.entity.User;
@@ -22,28 +22,28 @@ public class PostService {
     private final PostMapper postMapper;
     private final UserRepository userRepository;
 
-    public List<PostDto> retrievePosts() {
+    public List<PostResponse> retrievePosts() {
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
     }
 
-    public PostDto retrievePost(Long id) {
+    public PostResponse retrievePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
         return postMapper.toDto(post);
     }
 
-    public List<PostDto> retrievePostsByUserId(Long userId) {
+    public List<PostResponse> retrievePostsByUserId(Long userId) {
         return postRepository.findByUserId(userId)
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
     }
 
-    public PostDto createPost(PostRequest createRequest, User user) {
+    public PostResponse createPost(PostRequest createRequest, User user) {
         Post post = Post.builder()
                 .title(createRequest.getTitle())
                 .content(createRequest.getContent())
@@ -68,7 +68,7 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public PostDto updatePost(Long id, PostRequest updateRequest, User user) {
+    public PostResponse updatePost(Long id, PostRequest updateRequest, User user) {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 

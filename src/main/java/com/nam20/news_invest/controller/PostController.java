@@ -1,6 +1,6 @@
 package com.nam20.news_invest.controller;
 
-import com.nam20.news_invest.dto.PostDto;
+import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.PostService;
@@ -20,17 +20,17 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public List<PostDto> retrievePosts() {
+    public List<PostResponse> retrievePosts() {
         return postService.retrievePosts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDto> retrievePost(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> retrievePost(@PathVariable Long id) {
         return ResponseEntity.ok(postService.retrievePost(id));
     }
 
     @PostMapping
-    public ResponseEntity<PostDto> createPost(
+    public ResponseEntity<PostResponse> createPost(
             @Valid @RequestBody PostRequest createRequest,
             @AuthenticationPrincipal User user
     ) {
@@ -44,7 +44,7 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePost(
+    public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
             @Valid @RequestBody PostRequest updateRequest,
             @AuthenticationPrincipal User user) {
