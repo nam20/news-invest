@@ -45,8 +45,7 @@ public class Post {
     private List<Comment> comments;
 
     @Builder
-    public Post(Long id, User user, String title, String content, String category) {
-        this.id = id;
+    public Post(User user, String title, String content, String category) {
         this.user = user;
         this.title = title;
         this.content = content;

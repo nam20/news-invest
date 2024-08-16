@@ -49,8 +49,7 @@ public class Comment {
     private List<Comment> replies;
 
     @Builder
-    public Comment(Long id, User user, Post post, String content, Comment parentComment) {
-        this.id = id;
+    public Comment(User user, Post post, String content, Comment parentComment) {
         this.user = user;
         this.post = post;
         this.content = content;
