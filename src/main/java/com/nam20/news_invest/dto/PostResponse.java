@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @RequiredArgsConstructor
 public class PostResponse {
     private final Long id;

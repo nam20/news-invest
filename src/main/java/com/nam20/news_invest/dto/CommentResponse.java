@@ -5,6 +5,7 @@ import lombok.*;
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @RequiredArgsConstructor
 public class CommentResponse {
     private final Long id;

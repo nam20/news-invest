@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @RequiredArgsConstructor
 public class UserResponse {
     private final Long id;
