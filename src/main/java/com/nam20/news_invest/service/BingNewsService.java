@@ -22,7 +22,7 @@ public class BingNewsService {
     @Value("${BIND_NEWS_SEARCH_API_KEY}")
     private String apiKey;
 
-    private List<String> searchQueries = List.of("stock");
+    private final List<String> searchQueries = List.of("stock");
 
     public BingNewsService(WebClient.Builder webClientBuilder,
                            NewsArticleRepository newsArticleRepository) {
