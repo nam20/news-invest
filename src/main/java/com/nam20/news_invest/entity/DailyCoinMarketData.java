@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,14 @@ public class DailyCoinMarketData {
     private Double marketCap;
 
     private Double volume;
+
+    @Builder
+    public DailyCoinMarketData(String name, LocalDate date, Double price,
+                               Double marketCap, Double volume) {
+        this.name = name;
+        this.date = date;
+        this.price = price;
+        this.marketCap = marketCap;
+        this.volume = volume;
+    }
 }
