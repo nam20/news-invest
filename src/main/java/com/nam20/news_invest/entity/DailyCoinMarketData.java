@@ -1,9 +1,6 @@
 package com.nam20.news_invest.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +19,7 @@ public class DailyCoinMarketData {
 
     private String name;
 
+    @Column(unique = true)
     private LocalDate date;
 
     private Double price;
