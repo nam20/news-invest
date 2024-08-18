@@ -42,7 +42,7 @@ public class CoinGeckoCryptoService {
                 .uri(uriBuilder -> uriBuilder
                         .path(path)
                         .queryParam("x_cg_api_key", apiKey)
-                        .queryParam("vs_currency", "krw")
+                        .queryParam("vs_currency", "usd")
                         .queryParam("days", 1)
                         .queryParam("interval", "daily")
                         .build())
