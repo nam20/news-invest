@@ -36,7 +36,7 @@ public class CoinGeckoCryptoService {
     private void getAndSaveCryptoData(String coinName) {
         String path = """
                 /api/v3/coins/%s/market_chart
-                """.formatted(coinName);
+                """.formatted(coinName).trim();
 
         webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -48,11 +48,11 @@ public class CoinGeckoCryptoService {
                         .build())
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(this::convertToDailyCoinMarketData)
+                .map(jsonNode -> convertToDailyCoinMarketData(jsonNode, coinName))
                 .subscribe(dailyCoinMarketDataRepository::save);
     }
 
-    private DailyCoinMarketData convertToDailyCoinMarketData(JsonNode jsonNode) {
+    private DailyCoinMarketData convertToDailyCoinMarketData(JsonNode jsonNode, String coinName) {
         long unixTimestamp = jsonNode.get("prices").get(0).get(0).asLong();
 
         LocalDate date = Instant.ofEpochMilli(unixTimestamp)
@@ -60,6 +60,7 @@ public class CoinGeckoCryptoService {
                 .toLocalDate();
 
         return DailyCoinMarketData.builder()
+                .name(coinName)
                 .date(date)
                 .price(jsonNode.get("prices").get(0).get(1).asDouble())
                 .marketCap(jsonNode.get("market_caps").get(0).get(1).asDouble())
