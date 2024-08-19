@@ -5,12 +5,12 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserResponse {
-    private final Long id;
-    private final String name;
-    private final String email;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private Long id;
+    private String name;
+    private String email;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

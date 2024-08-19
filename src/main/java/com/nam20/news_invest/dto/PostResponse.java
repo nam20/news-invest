@@ -6,15 +6,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PostResponse {
-    private final Long id;
-    private final Long userId;
-    private final String title;
-    private final String content;
-    private final String category;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private final List<CommentResponse> comments;
+    private Long id;
+    private Long userId;
+    private String title;
+    private String content;
+    private String category;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private List<CommentResponse> comments;
 }

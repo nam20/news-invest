@@ -5,15 +5,15 @@ import lombok.*;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommentResponse {
-    private final Long id;
-    private final Long userId;
-    private final Long postId;
-    private final String content;
-    private final String createdAt;
-    private final String updatedAt;
-    private final Long parentCommentId;
-    private final List<CommentResponse> replies;
+    private Long id;
+    private Long userId;
+    private Long postId;
+    private String content;
+    private String createdAt;
+    private String updatedAt;
+    private Long parentCommentId;
+    private List<CommentResponse> replies;
 }

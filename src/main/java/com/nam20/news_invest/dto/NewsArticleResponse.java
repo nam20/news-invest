@@ -1,22 +1,19 @@
 package com.nam20.news_invest.dto;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NewsArticleResponse {
-    private final Long id;
-    private final String title;
-    private final String url;
-    private final String description;
-    private final String thumbnailUrl;
-    private final String provider;
-    private final LocalDateTime publishedAt;
-    private final String content;
+    private Long id;
+    private String title;
+    private String url;
+    private String description;
+    private String thumbnailUrl;
+    private String provider;
+    private LocalDateTime publishedAt;
+    private String content;
 }

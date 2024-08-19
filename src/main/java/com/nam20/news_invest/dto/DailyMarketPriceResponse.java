@@ -5,9 +5,9 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
-@RequiredArgsConstructor
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DailyMarketPriceResponse {
-    private final LocalDate date;
-    private final Double price;
+    private LocalDate date;
+    private Double price;
 }
