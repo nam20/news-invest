@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +19,7 @@ public class BingNewsService {
 
     private final WebClient webClient;
     private final NewsArticleRepository newsArticleRepository;
+    private final DeeplTranslateService deeplTranslateService;
 
     @Value("${BIND_NEWS_SEARCH_API_KEY}")
     private String apiKey;
@@ -25,9 +27,11 @@ public class BingNewsService {
     private final List<String> searchQueries = List.of("stock");
 
     public BingNewsService(WebClient.Builder webClientBuilder,
-                           NewsArticleRepository newsArticleRepository) {
+                           NewsArticleRepository newsArticleRepository,
+                           DeeplTranslateService deeplTranslateService) {
         this.webClient = webClientBuilder.baseUrl("https://api.bing.microsoft.com").build();
         this.newsArticleRepository = newsArticleRepository;
+        this.deeplTranslateService = deeplTranslateService;
     }
 
     public void processAllSearchQueries() {
@@ -45,19 +49,41 @@ public class BingNewsService {
                 .header("Ocp-Apim-Subscription-Key", apiKey)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .flatMapMany(jsonNode -> Flux.fromIterable(jsonNode.get("value")))
-                .map(this::convertToNewsArticle)
+                .flatMapMany(jsonNode -> {
+
+                    List<String> textsToTranslate = new ArrayList<>();
+                    JsonNode responseArticles = jsonNode.get("value");
+                    responseArticles.forEach(article -> {
+                        textsToTranslate.add(article.get("name").asText());
+                        textsToTranslate.add(article.get("description").asText());
+                    });
+
+                    return deeplTranslateService.translateTexts(textsToTranslate)
+                            .flatMapMany(translations -> {
+                                List<NewsArticle> articles = new ArrayList<>();
+                                for (int i = 0; i < translations.size(); i += 2) {
+                                    String translatedTitle = translations.get(i);
+                                    String translatedDescription = translations.get(i + 1);
+                                    JsonNode articleJson = responseArticles.get(i / 2);
+
+                                    NewsArticle article = convertToNewsArticle(
+                                            articleJson, translatedTitle, translatedDescription);
+                                    articles.add(article);
+                                }
+                                return Flux.fromIterable(articles);
+                            });
+                })
                 .subscribe(newsArticleRepository::save);
     }
 
-    private NewsArticle convertToNewsArticle(JsonNode article) {
+    private NewsArticle convertToNewsArticle(JsonNode article, String title, String description) {
         Instant instant = Instant.parse(article.get("datePublished").asText());
         LocalDateTime publishedAt = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
 
         return NewsArticle.builder()
-                .title(article.get("name").asText())
+                .title(title)
                 .url(article.get("url").asText())
-                .description(article.get("description").asText())
+                .description(description)
                 .thumbnailUrl(article.get("image").get("thumbnail").get("contentUrl").asText())
                 .provider(article.get("provider").get(0).get("name").asText())
                 .publishedAt(publishedAt)
