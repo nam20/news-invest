@@ -3,27 +3,27 @@ package com.nam20.news_invest.mapper;
 import com.nam20.news_invest.dto.DailyMarketPriceResponse;
 import com.nam20.news_invest.entity.DailyCoinMarketData;
 import com.nam20.news_invest.entity.DailyStockPrice;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class DailyMarketPriceMapper {
 
     private final ModelMapper modelMapper;
 
-    public DailyMarketPriceResponse stockToDto(DailyStockPrice dailyStockPrice) {
-        Converter<DailyStockPrice, DailyMarketPriceResponse> stockToDtoConverter = context -> {
-            DailyStockPrice source = context.getSource();
-            return new DailyMarketPriceResponse(
-                    source.getDate(),
-                    source.getClosePrice()
-            );
-        };
+    public DailyMarketPriceMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
 
-        modelMapper.addConverter(stockToDtoConverter);
+        modelMapper.addMappings(new PropertyMap<DailyStockPrice, DailyMarketPriceResponse>() {
+            @Override
+            protected void configure() {
+                map().setPrice(source.getClosePrice());
+            }
+        });
+    }
+
+    public DailyMarketPriceResponse stockToDto(DailyStockPrice dailyStockPrice) {
         return modelMapper.map(dailyStockPrice, DailyMarketPriceResponse.class);
     }
 
