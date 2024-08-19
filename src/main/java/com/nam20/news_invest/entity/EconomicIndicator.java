@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FredEconomicData {
+public class EconomicIndicator {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +29,8 @@ public class FredEconomicData {
     private Double dgOrder;   // 제조업 신규 주문
 
     @Builder
-    public FredEconomicData(LocalDate date, Double unrate, Double fedFunds,
-                            Double cpi, Double gdp, Double dgOrder) {
+    public EconomicIndicator(LocalDate date, Double unrate, Double fedFunds,
+                             Double cpi, Double gdp, Double dgOrder) {
         this.date = date;
         this.unrate = unrate;
         this.fedFunds = fedFunds;

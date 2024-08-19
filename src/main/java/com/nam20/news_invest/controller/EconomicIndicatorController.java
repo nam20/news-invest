@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/economic-indicators")
-public class EconomicIndicatorsController {
+public class EconomicIndicatorController {
 
     @GetMapping
     public void retrieveEconomicIndicators() {

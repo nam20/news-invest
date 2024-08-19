@@ -1,8 +1,8 @@
 package com.nam20.news_invest.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.nam20.news_invest.entity.FredEconomicData;
-import com.nam20.news_invest.repository.FredEconomicDataRepository;
+import com.nam20.news_invest.entity.EconomicIndicator;
+import com.nam20.news_invest.repository.EconomicIndicatorRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -15,7 +15,7 @@ import java.util.List;
 public class FredEconomicDataService {
 
     private final WebClient webClient;
-    private final FredEconomicDataRepository fredEconomicDataRepository;
+    private final EconomicIndicatorRepository economicIndicatorRepository;
 
     @Value("${FRED_API_KEY}")
     private String apiKey;
@@ -23,9 +23,9 @@ public class FredEconomicDataService {
     private final List<String> seriesIds = List.of("UNRATE", "FEDFUNDS", "CPIAUCSL", "GDP", "DGORDER");
 
     public FredEconomicDataService(WebClient.Builder webClientBuilder,
-                                   FredEconomicDataRepository fredEconomicDataRepository) {
+                                   EconomicIndicatorRepository economicIndicatorRepository) {
         this.webClient = webClientBuilder.baseUrl("https://api.stlouisfed.org").build();
-        this.fredEconomicDataRepository = fredEconomicDataRepository;
+        this.economicIndicatorRepository = economicIndicatorRepository;
     }
 
     public void processAllSeries() {
@@ -45,39 +45,39 @@ public class FredEconomicDataService {
                 .bodyToMono(JsonNode.class)
                 .flatMapMany(jsonNode -> Flux.fromIterable(jsonNode.get("observations")))
                 .map(observation -> convertToFredEconomicData(observation, seriesId))
-                .subscribe(fredEconomicDataRepository::save);
+                .subscribe(economicIndicatorRepository::save);
     }
 
-    private FredEconomicData convertToFredEconomicData(JsonNode jsonNode, String seriesId) {
+    private EconomicIndicator convertToFredEconomicData(JsonNode jsonNode, String seriesId) {
         String date = jsonNode.get("date").asText();
         Double value = jsonNode.get("value").asDouble();
 
-        FredEconomicData economicData = findOrCreateFredEconomicData(LocalDate.parse(date));
+        EconomicIndicator economicIndicator = findOrCreateFredEconomicData(LocalDate.parse(date));
 
         switch (seriesId) {
             case "UNRATE":
-                economicData.setUnrate(value);
+                economicIndicator.setUnrate(value);
                 break;
             case "FEDFUNDS":
-                economicData.setFedFunds(value);
+                economicIndicator.setFedFunds(value);
                 break;
             case "CPIAUCSL":
-                economicData.setCpi(value);
+                economicIndicator.setCpi(value);
                 break;
             case "GDP":
-                economicData.setGdp(value);
+                economicIndicator.setGdp(value);
                 break;
             case "DGORDER":
-                economicData.setDgOrder(value);
+                economicIndicator.setDgOrder(value);
                 break;
         }
 
-        return economicData;
+        return economicIndicator;
     }
 
-    private FredEconomicData findOrCreateFredEconomicData(LocalDate date) {
-        return fredEconomicDataRepository.findByDate(date)
-                .orElseGet(() -> fredEconomicDataRepository.save(FredEconomicData.builder()
+    private EconomicIndicator findOrCreateFredEconomicData(LocalDate date) {
+        return economicIndicatorRepository.findByDate(date)
+                .orElseGet(() -> economicIndicatorRepository.save(EconomicIndicator.builder()
                         .date(date)
                         .build()));
     }
