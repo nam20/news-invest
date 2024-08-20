@@ -11,11 +11,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "trades")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Transaction {
+public class Trade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class Transaction {
     private Asset asset;
 
     @Builder
-    public Transaction(String type, Double quantity, Double price, Asset asset) {
+    public Trade(String type, Double quantity, Double price, Asset asset) {
         this.type = type;
         this.quantity = quantity;
         this.price = price;

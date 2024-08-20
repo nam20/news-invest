@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/portfolios")
-public class TransactionController {
+public class TradeController {
 
     @PostMapping("/{portfolioId}/assets/{assetId}/buy")
     public void buyAsset(@PathVariable Long portfolioId, @PathVariable Long assetId) {
