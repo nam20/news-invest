@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -32,7 +32,7 @@ public class Asset {
     private Double purchasePrice;
 
     @Column(nullable = false)
-    private LocalDate purchaseDate;
+    private LocalDateTime lastPurchasedAt;
 
     @ManyToOne
     @JoinColumn(name = "portfolio_id", nullable = false)
@@ -43,12 +43,12 @@ public class Asset {
 
     @Builder
     public Asset(String symbol, String type, Double quantity,
-                 Double purchasePrice, LocalDate purchaseDate, Portfolio portfolio) {
+                 Double purchasePrice, LocalDateTime lastPurchasedAt, Portfolio portfolio) {
         this.symbol = symbol;
         this.type = type;
         this.quantity = quantity;
         this.purchasePrice = purchasePrice;
-        this.purchaseDate = purchaseDate;
+        this.lastPurchasedAt = lastPurchasedAt;
         this.portfolio = portfolio;
     }
 }
