@@ -25,7 +25,7 @@ public class Trade {
     private String symbol;
 
     @Column(nullable = false)
-    private String type;
+    private String assetType;
 
     @Column(nullable = false)
     private Double quantity;
@@ -41,9 +41,9 @@ public class Trade {
     private Asset asset;
 
     @Builder
-    public Trade(String symbol, String type, Double quantity, Double price, Asset asset) {
+    public Trade(String symbol, String assetType, Double quantity, Double price, Asset asset) {
         this.symbol = symbol;
-        this.type = type;
+        this.assetType = assetType;
         this.quantity = quantity;
         this.price = price;
         this.asset = asset;
