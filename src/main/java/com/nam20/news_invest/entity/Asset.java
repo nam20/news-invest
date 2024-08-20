@@ -29,7 +29,7 @@ public class Asset {
     private Double quantity;
 
     @Column(nullable = false)
-    private Double purchasePrice;
+    private Double averagePurchasePrice;
 
     @Column(nullable = false)
     private LocalDateTime lastPurchasedAt;
@@ -43,11 +43,11 @@ public class Asset {
 
     @Builder
     public Asset(String symbol, String type, Double quantity,
-                 Double purchasePrice, LocalDateTime lastPurchasedAt, Portfolio portfolio) {
+                 Double averagePurchasePrice, LocalDateTime lastPurchasedAt, Portfolio portfolio) {
         this.symbol = symbol;
         this.type = type;
         this.quantity = quantity;
-        this.purchasePrice = purchasePrice;
+        this.averagePurchasePrice = averagePurchasePrice;
         this.lastPurchasedAt = lastPurchasedAt;
         this.portfolio = portfolio;
     }
