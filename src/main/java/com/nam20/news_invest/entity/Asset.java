@@ -51,4 +51,9 @@ public class Asset {
         this.lastPurchasedAt = lastPurchasedAt;
         this.portfolio = portfolio;
     }
+
+    public void updateAveragePurchasePriceAndQuantity(Double averagePurchasePrice, Double quantity) {
+        this.averagePurchasePrice = averagePurchasePrice;
+        this.quantity = quantity;
+    }
 }
