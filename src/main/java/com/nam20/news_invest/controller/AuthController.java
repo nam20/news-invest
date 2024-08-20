@@ -31,12 +31,13 @@ public class AuthController {
         UserResponse userResponse = userService.createUser(registerRequest);
         String token = retrieveToken(registerRequest.getName(), registerRequest.getPassword());
 
-        AuthResponse responseDto = new AuthResponse(
-                "User registered successfully",
-                userResponse, token
-        );
+        AuthResponse authResponse = AuthResponse.builder()
+                .message("User registered successfully")
+                .user(userResponse)
+                .token(token)
+                .build();
 
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/login")
@@ -45,12 +46,13 @@ public class AuthController {
         String token = retrieveToken(loginRequest.getName(), loginRequest.getPassword());
         UserResponse userResponse = userService.retrieveUserByName(loginRequest.getName());
 
-        AuthResponse responseDto = new AuthResponse(
-                "User logged in successfully",
-                userResponse, token
-        );
+        AuthResponse authResponse = AuthResponse.builder()
+                .message("User logged in successfully")
+                .user(userResponse)
+                .token(token)
+                .build();
 
-        return ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(authResponse);
     }
 
     private String retrieveToken(String username, String password) {
