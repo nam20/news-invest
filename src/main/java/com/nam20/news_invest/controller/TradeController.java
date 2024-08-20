@@ -1,21 +1,32 @@
 package com.nam20.news_invest.controller;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.nam20.news_invest.dto.TradeRequest;
+import com.nam20.news_invest.dto.TradeResponse;
+import com.nam20.news_invest.service.TradeService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/portfolios")
+@RequestMapping("/api/portfolios/{portfolioId}")
+@RequiredArgsConstructor
 public class TradeController {
 
-    @PostMapping("/{portfolioId}/assets/{assetId}/buy")
-    public void buyAsset(@PathVariable Long portfolioId, @PathVariable Long assetId) {
-        // TODO
+    private final TradeService tradeService;
+
+    @PostMapping("/buy")
+    public ResponseEntity<TradeResponse> buyAsset(
+            @PathVariable Long portfolioId,
+            @RequestBody TradeRequest tradeRequest
+    ) {
+        return ResponseEntity.ok(tradeService.buyAsset(portfolioId, tradeRequest));
     }
 
-    @PostMapping("/{portfolioId}/assets/{assetId}/sell")
-    public void sellAsset(@PathVariable Long portfolioId, @PathVariable Long assetId) {
-        // TODO
+    @PostMapping("/sell")
+    public ResponseEntity<TradeResponse> sellAsset(
+            @PathVariable Long portfolioId,
+            @RequestBody TradeRequest tradeRequest
+    ) {
+        return ResponseEntity.ok(tradeService.sellAsset(portfolioId, tradeRequest));
     }
 }
