@@ -39,4 +39,8 @@ public class CurrentMarketPrice {
         this.type = type;
         this.price = price;
     }
+
+    public void updatePrice(Double price) {
+        this.price = price;
+    }
 }
