@@ -45,7 +45,9 @@ public class FredEconomicDataService {
                 .bodyToMono(JsonNode.class)
                 .flatMapMany(jsonNode -> Flux.fromIterable(jsonNode.get("observations")))
                 .map(observation -> convertToFredEconomicData(observation, seriesId))
-                .subscribe(economicIndicatorRepository::save);
+                .collectList()
+                .doOnNext(economicIndicatorRepository::saveAll)
+                .subscribe();
     }
 
     private EconomicIndicator convertToFredEconomicData(JsonNode jsonNode, String seriesId) {

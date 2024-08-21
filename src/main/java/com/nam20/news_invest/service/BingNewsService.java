@@ -73,7 +73,9 @@ public class BingNewsService {
                                 return Flux.fromIterable(articles);
                             });
                 })
-                .subscribe(newsArticleRepository::save);
+                .collectList()
+                .doOnNext(newsArticleRepository::saveAll)
+                .subscribe();
     }
 
     private NewsArticle convertToNewsArticle(JsonNode article, String title, String description) {
