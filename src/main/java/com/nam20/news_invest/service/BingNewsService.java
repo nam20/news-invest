@@ -21,7 +21,7 @@ public class BingNewsService {
     private final NewsArticleRepository newsArticleRepository;
     private final DeeplTranslateService deeplTranslateService;
 
-    @Value("${BIND_NEWS_SEARCH_API_KEY}")
+    @Value("${BING_NEWS_SEARCH_API_KEY}")
     private String apiKey;
 
     private final List<String> searchQueries = List.of("stock");
