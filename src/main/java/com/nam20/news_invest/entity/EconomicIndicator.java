@@ -6,6 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "economic_indicators")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
