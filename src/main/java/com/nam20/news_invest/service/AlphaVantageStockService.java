@@ -2,9 +2,9 @@ package com.nam20.news_invest.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
-import com.nam20.news_invest.entity.DailyStockPrice;
+import com.nam20.news_invest.entity.DailyStockMetric;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
-import com.nam20.news_invest.repository.DailyStockPriceRepository;
+import com.nam20.news_invest.repository.DailyStockMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,7 +19,7 @@ import java.util.Optional;
 public class AlphaVantageStockService {
 
     private final WebClient webClient;
-    private final DailyStockPriceRepository dailyStockPriceRepository;
+    private final DailyStockMetricRepository dailyStockMetricRepository;
     private final CurrentMarketPriceRepository currentMarketPriceRepository;
 
     @Value("${ALPHA_VANTAGE_API_KEY}")
@@ -28,10 +28,10 @@ public class AlphaVantageStockService {
     private final List<String> symbols = List.of("VOO","QQQ");
 
     public AlphaVantageStockService(WebClient.Builder webClientBuilder,
-                                    DailyStockPriceRepository dailyStockPriceRepository,
+                                    DailyStockMetricRepository dailyStockMetricRepository,
                                     CurrentMarketPriceRepository currentMarketPriceRepository) {
         this.webClient = webClientBuilder.baseUrl("https://www.alphavantage.co").build();
-        this.dailyStockPriceRepository = dailyStockPriceRepository;
+        this.dailyStockMetricRepository = dailyStockMetricRepository;
         this.currentMarketPriceRepository = currentMarketPriceRepository;
     }
 
@@ -57,17 +57,17 @@ public class AlphaVantageStockService {
                 .map(entry -> convertToDailyStockPrice(entry, symbol))
                 .collectList()
                 .doOnNext(dailyStockPrices -> {
-                    dailyStockPriceRepository.saveAll(dailyStockPrices);
+                    dailyStockMetricRepository.saveAll(dailyStockPrices);
                     updateCurrentMarketPrice(symbol);
                 })
                 .subscribe();
     }
 
-    private DailyStockPrice convertToDailyStockPrice(Map.Entry<String, JsonNode> stockData, String symbol) {
+    private DailyStockMetric convertToDailyStockPrice(Map.Entry<String, JsonNode> stockData, String symbol) {
         String date = stockData.getKey();
         JsonNode dailyData = stockData.getValue();
 
-        return DailyStockPrice.builder()
+        return DailyStockMetric.builder()
                 .symbol(symbol)
                 .date(LocalDate.parse(date))
                 .openPrice(dailyData.get("1. open").asDouble())
@@ -79,14 +79,14 @@ public class AlphaVantageStockService {
     }
 
     private void updateCurrentMarketPrice(String symbol) {
-        Optional<DailyStockPrice> optionalLatestPrice =
-                dailyStockPriceRepository.findFirstBySymbolOrderByDateDesc(symbol);
+        Optional<DailyStockMetric> optionalLatestPrice =
+                dailyStockMetricRepository.findFirstBySymbolOrderByDateDesc(symbol);
 
         if (optionalLatestPrice.isEmpty()) {
             return;
         }
 
-        DailyStockPrice latestPrice = optionalLatestPrice.get();
+        DailyStockMetric latestPrice = optionalLatestPrice.get();
         Double closePrice = latestPrice.getClosePrice();
 
         currentMarketPriceRepository.findByTypeAndSymbol("stock", symbol).ifPresentOrElse(

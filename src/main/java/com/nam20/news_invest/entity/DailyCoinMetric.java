@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "daily_coin_metrics")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DailyCoinMarketData {
+public class DailyCoinMetric {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +30,8 @@ public class DailyCoinMarketData {
     private Double volume;
 
     @Builder
-    public DailyCoinMarketData(String name, LocalDate date, Double price,
-                               Double marketCap, Double volume) {
+    public DailyCoinMetric(String name, LocalDate date, Double price,
+                           Double marketCap, Double volume) {
         this.name = name;
         this.date = date;
         this.price = price;

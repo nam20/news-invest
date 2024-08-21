@@ -1,9 +1,9 @@
 package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.dto.DailyMarketPriceResponse;
-import com.nam20.news_invest.entity.DailyCoinMarketData;
+import com.nam20.news_invest.entity.DailyCoinMetric;
 import com.nam20.news_invest.mapper.DailyMarketPriceMapper;
-import com.nam20.news_invest.repository.DailyCoinMarketDataRepository;
+import com.nam20.news_invest.repository.DailyCoinMetricRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +11,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DailyCoinMarketDataService {
+public class DailyCoinMetricService {
 
-    private final DailyCoinMarketDataRepository dailyCoinMarketDataRepository;
+    private final DailyCoinMetricRepository dailyCoinMetricRepository;
     private final DailyMarketPriceMapper dailyMarketPriceMapper;
 
     public List<DailyMarketPriceResponse> retrieveDailyCoinMarketData(String symbol) {
-        List<DailyCoinMarketData> prices = dailyCoinMarketDataRepository.findByName(symbol);
+        List<DailyCoinMetric> prices = dailyCoinMetricRepository.findByName(symbol);
 
         return prices.stream()
                 .map(dailyMarketPriceMapper::coinToDto)

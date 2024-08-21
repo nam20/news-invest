@@ -2,14 +2,12 @@ package com.nam20.news_invest.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
-import com.nam20.news_invest.entity.DailyCoinMarketData;
-import com.nam20.news_invest.entity.DailyStockPrice;
+import com.nam20.news_invest.entity.DailyCoinMetric;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
-import com.nam20.news_invest.repository.DailyCoinMarketDataRepository;
+import com.nam20.news_invest.repository.DailyCoinMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -21,7 +19,7 @@ import java.util.Optional;
 public class CoinGeckoCryptoService {
 
     private final WebClient webClient;
-    private final DailyCoinMarketDataRepository dailyCoinMarketDataRepository;
+    private final DailyCoinMetricRepository dailyCoinMetricRepository;
     private final CurrentMarketPriceRepository currentMarketPriceRepository;
 
     @Value("${COIN_GECKO_API_KEY}")
@@ -30,10 +28,10 @@ public class CoinGeckoCryptoService {
     private final List<String> coinNames = List.of("bitcoin");
 
     public CoinGeckoCryptoService(WebClient.Builder webClientBuilder,
-                                  DailyCoinMarketDataRepository dailyCoinMarketDataRepository,
+                                  DailyCoinMetricRepository dailyCoinMetricRepository,
                                   CurrentMarketPriceRepository currentMarketPriceRepository) {
         this.webClient = webClientBuilder.baseUrl("https://api.coingecko.com").build();
-        this.dailyCoinMarketDataRepository = dailyCoinMarketDataRepository;
+        this.dailyCoinMetricRepository = dailyCoinMetricRepository;
         this.currentMarketPriceRepository = currentMarketPriceRepository;
     }
 
@@ -60,20 +58,20 @@ public class CoinGeckoCryptoService {
                 .flux()
                 .collectList()
                 .doOnNext(dailyCoinMarketData -> {
-                    dailyCoinMarketDataRepository.saveAll(dailyCoinMarketData);
+                    dailyCoinMetricRepository.saveAll(dailyCoinMarketData);
                     updateCurrentMarketPrice(coinName);
                 })
                 .subscribe();
     }
 
-    private DailyCoinMarketData convertToDailyCoinMarketData(JsonNode jsonNode, String coinName) {
+    private DailyCoinMetric convertToDailyCoinMarketData(JsonNode jsonNode, String coinName) {
         long unixTimestamp = jsonNode.get("prices").get(0).get(0).asLong();
 
         LocalDate date = Instant.ofEpochMilli(unixTimestamp)
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        return DailyCoinMarketData.builder()
+        return DailyCoinMetric.builder()
                 .name(coinName)
                 .date(date)
                 .price(jsonNode.get("prices").get(0).get(1).asDouble())
@@ -83,14 +81,14 @@ public class CoinGeckoCryptoService {
     }
 
     private void updateCurrentMarketPrice(String name) {
-        Optional<DailyCoinMarketData> optionalLatestPrice =
-                dailyCoinMarketDataRepository.findFirstByNameOrderByDateDesc(name);
+        Optional<DailyCoinMetric> optionalLatestPrice =
+                dailyCoinMetricRepository.findFirstByNameOrderByDateDesc(name);
 
         if (optionalLatestPrice.isEmpty()) {
             return;
         }
 
-        DailyCoinMarketData latestPrice = optionalLatestPrice.get();
+        DailyCoinMetric latestPrice = optionalLatestPrice.get();
         Double price = latestPrice.getPrice();
 
         currentMarketPriceRepository.findByTypeAndSymbol("coin", name).ifPresentOrElse(
