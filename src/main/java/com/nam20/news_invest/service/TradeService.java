@@ -5,6 +5,7 @@ import com.nam20.news_invest.dto.TradeResponse;
 import com.nam20.news_invest.entity.Asset;
 import com.nam20.news_invest.entity.Portfolio;
 import com.nam20.news_invest.entity.Trade;
+import com.nam20.news_invest.exception.InsufficientBalanceException;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.mapper.TradeMapper;
 import com.nam20.news_invest.repository.AssetRepository;
@@ -97,7 +98,7 @@ public class TradeService {
         double totalQuantity = existingQuantity - tradeQuantity;
 
         if (totalQuantity < 0) {
-            throw new ResourceNotFoundException("Not enough quantity to sell");
+            throw new InsufficientBalanceException("Not enough quantity to sell");
         }
 
         Double averagePurchasePrice =
