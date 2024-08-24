@@ -1,9 +1,6 @@
 package com.nam20.news_invest.controller;
 
-import com.nam20.news_invest.dto.CommentResponse;
-import com.nam20.news_invest.dto.PostResponse;
-import com.nam20.news_invest.dto.UserResponse;
-import com.nam20.news_invest.dto.UserUpdateRequest;
+import com.nam20.news_invest.dto.*;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
 import com.nam20.news_invest.service.PostService;
@@ -14,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -24,10 +19,13 @@ public class UserController {
     private final UserService userService;
     private final PostService postService;
     private final CommentService commentService;
+    private static final int PAGE_SIZE = 20;
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> retrieveUsers() {
-        return ResponseEntity.ok(userService.retrieveUsers());
+    public ResponseEntity<PaginationResponse<UserResponse>> retrieveUsers(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(userService.retrieveUsers(page, PAGE_SIZE));
     }
 
     @GetMapping("/{id}")
@@ -45,18 +43,24 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest requestDto,
-            @AuthenticationPrincipal User user) {
+            @AuthenticationPrincipal User user
+    ) {
         return ResponseEntity.ok(userService.updateUser(id, requestDto, user));
     }
 
     @GetMapping("/{id}/posts")
-    public ResponseEntity<List<PostResponse>> retrievePosts(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.retrievePostsByUserId(id));
+    public ResponseEntity<PaginationResponse<PostResponse>> retrievePosts(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(postService.retrievePostsByUserId(id, page, PAGE_SIZE));
     }
 
     @GetMapping("/{id}/comments")
-    public ResponseEntity<List<CommentResponse>> retrieveComments(@PathVariable Long id) {
-        return ResponseEntity.ok(commentService.retrieveCommentsByUserId(id));
+    public ResponseEntity<PaginationResponse<CommentResponse>> retrieveComments(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(commentService.retrieveCommentsByUserId(id, page, PAGE_SIZE));
     }
-
 }

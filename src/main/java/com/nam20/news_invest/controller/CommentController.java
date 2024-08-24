@@ -3,6 +3,7 @@ package com.nam20.news_invest.controller;
 import com.nam20.news_invest.dto.CommentCreateRequest;
 import com.nam20.news_invest.dto.CommentResponse;
 import com.nam20.news_invest.dto.CommentUpdateRequest;
+import com.nam20.news_invest.dto.PaginationResponse;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.service.CommentService;
 import jakarta.validation.Valid;
@@ -11,18 +12,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/comments")
 public class CommentController {
 
     private final CommentService commentService;
+    private static final int PAGE_SIZE = 20;
 
     @GetMapping
-    public ResponseEntity<List<CommentResponse>> retrieveComments() {
-        return ResponseEntity.ok(commentService.retrieveComments());
+    public ResponseEntity<PaginationResponse<CommentResponse>> retrieveComments(
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(commentService.retrieveComments(page, PAGE_SIZE));
     }
 
     @GetMapping("/{id}")
@@ -43,7 +45,7 @@ public class CommentController {
             @PathVariable Long id,
             @Valid @RequestBody CommentUpdateRequest requestDto,
             @AuthenticationPrincipal User user
-            ) {
+    ) {
         return ResponseEntity.ok(commentService.updateComment(id, requestDto, user));
     }
 

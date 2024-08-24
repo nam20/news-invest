@@ -1,13 +1,19 @@
 package com.nam20.news_invest.service;
 
+import com.nam20.news_invest.dto.PaginationResponse;
 import com.nam20.news_invest.dto.PortfolioRequest;
 import com.nam20.news_invest.dto.PortfolioResponse;
 import com.nam20.news_invest.entity.Portfolio;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
+import com.nam20.news_invest.mapper.PaginationMetaMapper;
 import com.nam20.news_invest.mapper.PortfolioMapper;
 import com.nam20.news_invest.repository.PortfolioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +24,20 @@ public class PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
     private final PortfolioMapper portfolioMapper;
+    private final PaginationMetaMapper paginationMetaMapper;
 
-    public List<PortfolioResponse> retrievePortfolios(User user) {
-        return portfolioRepository.findByUserId(user.getId())
+    public PaginationResponse<PortfolioResponse> retrievePortfolios(User user, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Portfolio> portfoliosPage = portfolioRepository.findByUserId(user.getId(), pageable);
+
+        List<PortfolioResponse> portfolioResponses = portfoliosPage
+                .getContent()
                 .stream()
                 .map(portfolioMapper::toDto)
                 .toList();
+
+        return new PaginationResponse<>(portfolioResponses,
+                paginationMetaMapper.toPaginationMeta(portfoliosPage));
     }
 
     public PortfolioResponse retrievePortfolio(Long id) {

@@ -1,15 +1,20 @@
 package com.nam20.news_invest.service;
 
-import com.nam20.news_invest.dto.PostResponse;
+import com.nam20.news_invest.dto.PaginationResponse;
 import com.nam20.news_invest.dto.PostRequest;
+import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.entity.Post;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
+import com.nam20.news_invest.mapper.PaginationMetaMapper;
 import com.nam20.news_invest.mapper.PostMapper;
 import com.nam20.news_invest.repository.PostRepository;
-import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +25,20 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    private final UserRepository userRepository;
+    private final PaginationMetaMapper paginationMetaMapper;
 
-    public List<PostResponse> retrievePosts() {
-        return postRepository.findAll()
+    public PaginationResponse<PostResponse> retrievePosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Post> postsPage = postRepository.findAll(pageable);
+
+        List<PostResponse> postResponses = postsPage
+                .getContent()
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
+
+        return new PaginationResponse<>(postResponses,
+                paginationMetaMapper.toPaginationMeta(postsPage));
     }
 
     public PostResponse retrievePost(Long id) {
@@ -36,11 +48,18 @@ public class PostService {
         return postMapper.toDto(post);
     }
 
-    public List<PostResponse> retrievePostsByUserId(Long userId) {
-        return postRepository.findByUserId(userId)
+    public PaginationResponse<PostResponse> retrievePostsByUserId(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Post> postsPage = postRepository.findByUserId(userId, pageable);
+
+        List<PostResponse> postResponses = postsPage
+                .getContent()
                 .stream()
                 .map(postMapper::toDto)
                 .toList();
+
+        return new PaginationResponse<>(postResponses,
+                paginationMetaMapper.toPaginationMeta(postsPage));
     }
 
     public PostResponse createPost(PostRequest createRequest, User user) {

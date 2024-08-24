@@ -3,16 +3,21 @@ package com.nam20.news_invest.service;
 import com.nam20.news_invest.dto.CommentCreateRequest;
 import com.nam20.news_invest.dto.CommentResponse;
 import com.nam20.news_invest.dto.CommentUpdateRequest;
+import com.nam20.news_invest.dto.PaginationResponse;
 import com.nam20.news_invest.entity.Comment;
 import com.nam20.news_invest.entity.Post;
 import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
 import com.nam20.news_invest.mapper.CommentMapper;
+import com.nam20.news_invest.mapper.PaginationMetaMapper;
 import com.nam20.news_invest.repository.CommentRepository;
 import com.nam20.news_invest.repository.PostRepository;
-import com.nam20.news_invest.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,14 +28,21 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final CommentMapper commentMapper;
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final PaginationMetaMapper paginationMetaMapper;
 
-    public List<CommentResponse> retrieveComments() {
-        return commentRepository.findAll()
+    public PaginationResponse<CommentResponse> retrieveComments(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Comment> commentsPage = commentRepository.findAll(pageable);
+
+        List<CommentResponse> commentResponses = commentsPage
+                .getContent()
                 .stream()
                 .map(commentMapper::toDto)
                 .toList();
+
+        return new PaginationResponse<>(commentResponses,
+                paginationMetaMapper.toPaginationMeta(commentsPage));
     }
 
     public CommentResponse retrieveComment(Long id) {
@@ -40,11 +52,18 @@ public class CommentService {
         return commentMapper.toDto(comment);
     }
 
-    public List<CommentResponse> retrieveCommentsByUserId(Long postId) {
-        return commentRepository.findByUserId(postId)
+    public PaginationResponse<CommentResponse> retrieveCommentsByUserId(Long postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Comment> commentsPage = commentRepository.findByUserId(postId, pageable);
+
+        List<CommentResponse> commentResponses = commentsPage
+                .getContent()
                 .stream()
                 .map(commentMapper::toDto)
                 .toList();
+
+        return new PaginationResponse<>(commentResponses,
+                paginationMetaMapper.toPaginationMeta(commentsPage));
     }
 
     public CommentResponse createComment(CommentCreateRequest requestDto, User user) {
