@@ -34,7 +34,6 @@ public class AuthController {
         String token = retrieveToken(registerRequest.getName(), registerRequest.getPassword());
 
         AuthResponse authResponse = AuthResponse.builder()
-                .message("User registered successfully")
                 .user(userResponse)
                 .token(token)
                 .build();
@@ -49,7 +48,6 @@ public class AuthController {
         UserResponse userResponse = userService.retrieveUserByName(loginRequest.getName());
 
         AuthResponse authResponse = AuthResponse.builder()
-                .message("User logged in successfully")
                 .user(userResponse)
                 .token(token)
                 .build();
