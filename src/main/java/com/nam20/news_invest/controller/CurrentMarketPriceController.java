@@ -2,6 +2,7 @@ package com.nam20.news_invest.controller;
 
 import com.nam20.news_invest.dto.CurrentMarketPriceResponse;
 import com.nam20.news_invest.dto.PaginationResponse;
+import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.service.CurrentMarketPriceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,9 @@ public class CurrentMarketPriceController {
     }
 
     @GetMapping("/{type}/{symbol}")
-    public ResponseEntity<CurrentMarketPriceResponse> retrieveCurrentMarketPrice(@PathVariable String type, @PathVariable String symbol) {
+    public ResponseEntity<CurrentMarketPriceResponse> retrieveCurrentMarketPrice(
+            @PathVariable AssetType type, @PathVariable String symbol
+    ) {
         return ResponseEntity.ok(currentMarketPriceService.retrieveCurrentMarketPrice(type, symbol));
     }
 }

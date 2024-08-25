@@ -1,5 +1,6 @@
 package com.nam20.news_invest.dto;
 
+import com.nam20.news_invest.enums.AssetType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class AssetResponse {
     private Long id;
     private String symbol;
-    private String type;
+    private AssetType type;
     private Double quantity;
     private Double purchasePrice;
     private LocalDateTime lastPurchasedAt;

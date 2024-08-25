@@ -3,6 +3,7 @@ package com.nam20.news_invest.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
 import com.nam20.news_invest.entity.DailyCoinMetric;
+import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
 import com.nam20.news_invest.repository.DailyCoinMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -91,14 +92,14 @@ public class CoinGeckoCryptoService {
         DailyCoinMetric latestPrice = optionalLatestPrice.get();
         Double price = latestPrice.getPrice();
 
-        currentMarketPriceRepository.findByTypeAndSymbol("coin", name).ifPresentOrElse(
+        currentMarketPriceRepository.findByTypeAndSymbol(AssetType.COIN, name).ifPresentOrElse(
                 currentMarketPrice -> {
                     currentMarketPrice.updatePrice(price);
                     currentMarketPriceRepository.save(currentMarketPrice);
                 },
                 () -> {
                     currentMarketPriceRepository.save(CurrentMarketPrice.builder()
-                            .type("coin")
+                            .type(AssetType.COIN)
                             .symbol(name)
                             .price(price)
                             .build());

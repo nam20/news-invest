@@ -3,6 +3,7 @@ package com.nam20.news_invest.service;
 import com.nam20.news_invest.dto.CurrentMarketPriceResponse;
 import com.nam20.news_invest.dto.PaginationResponse;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
+import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.mapper.CurrentMarketPriceMapper;
 import com.nam20.news_invest.mapper.PaginationMetaMapper;
@@ -38,7 +39,7 @@ public class CurrentMarketPriceService {
                 paginationMetaMapper.toPaginationMeta(currentMarketPricesPage));
     }
 
-    public CurrentMarketPriceResponse retrieveCurrentMarketPrice(String type, String symbol) {
+    public CurrentMarketPriceResponse retrieveCurrentMarketPrice(AssetType type, String symbol) {
         CurrentMarketPrice currentMarketPrice = currentMarketPriceRepository.findByTypeAndSymbol(type, symbol)
                 .orElseThrow(() -> new ResourceNotFoundException("type: " + type + ", symbol: " + symbol));
 

@@ -2,6 +2,7 @@ package com.nam20.news_invest.controller;
 
 import com.nam20.news_invest.dto.DailyMarketPriceResponse;
 import com.nam20.news_invest.dto.PaginationResponse;
+import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.service.DailyCoinMetricService;
 import com.nam20.news_invest.service.DailyStockMetricService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,10 @@ public class DailyMarketPriceController {
 
     @GetMapping("{type}/{symbol}")
     public ResponseEntity<PaginationResponse<DailyMarketPriceResponse>> retrieveDailyMarketPrices(
-            @PathVariable String type, @PathVariable String symbol,
+            @PathVariable AssetType type, @PathVariable String symbol,
             @RequestParam(defaultValue = "0") int page
     ) {
-        if (type.equals("stock")) {
+        if (AssetType.STOCK.equals(type)) {
             return ResponseEntity.ok(dailyStockMetricService.retrieveDailyStockPrices(symbol, page, PAGE_SIZE));
         } else {
             return ResponseEntity.ok(dailyCoinMetricService.retrieveDailyCoinMarketData(symbol, page, PAGE_SIZE));

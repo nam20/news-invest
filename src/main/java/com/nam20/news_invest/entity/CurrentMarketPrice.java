@@ -1,5 +1,6 @@
 package com.nam20.news_invest.entity;
 
+import com.nam20.news_invest.enums.AssetType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class CurrentMarketPrice {
     private String symbol;
 
     @Column(nullable = false)
-    private String type;
+    private AssetType type;
 
     @Column(nullable = false)
     private Double price;
@@ -34,7 +35,7 @@ public class CurrentMarketPrice {
     private LocalDateTime updatedAt;
 
     @Builder
-    public CurrentMarketPrice(String symbol, String type, Double price) {
+    public CurrentMarketPrice(String symbol, AssetType type, Double price) {
         this.symbol = symbol;
         this.type = type;
         this.price = price;

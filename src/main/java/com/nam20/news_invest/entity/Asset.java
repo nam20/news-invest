@@ -1,5 +1,6 @@
 package com.nam20.news_invest.entity;
 
+import com.nam20.news_invest.enums.AssetType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,7 +24,7 @@ public class Asset {
     private String symbol;
 
     @Column(nullable = false)
-    private String type;
+    private AssetType type;
 
     @Column(nullable = false)
     private Double quantity;
@@ -42,7 +43,7 @@ public class Asset {
     private List<Trade> trades;
 
     @Builder
-    public Asset(String symbol, String type, Double quantity,
+    public Asset(String symbol, AssetType type, Double quantity,
                  Double averagePurchasePrice, LocalDateTime lastPurchasedAt, Portfolio portfolio) {
         this.symbol = symbol;
         this.type = type;

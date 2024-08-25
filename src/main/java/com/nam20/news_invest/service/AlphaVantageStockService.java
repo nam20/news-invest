@@ -3,6 +3,7 @@ package com.nam20.news_invest.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
 import com.nam20.news_invest.entity.DailyStockMetric;
+import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
 import com.nam20.news_invest.repository.DailyStockMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,14 +90,14 @@ public class AlphaVantageStockService {
         DailyStockMetric latestPrice = optionalLatestPrice.get();
         Double closePrice = latestPrice.getClosePrice();
 
-        currentMarketPriceRepository.findByTypeAndSymbol("stock", symbol).ifPresentOrElse(
+        currentMarketPriceRepository.findByTypeAndSymbol(AssetType.STOCK, symbol).ifPresentOrElse(
                 currentMarketPrice -> {
                     currentMarketPrice.updatePrice(closePrice);
                     currentMarketPriceRepository.save(currentMarketPrice);
                 },
                 () -> {
                     currentMarketPriceRepository.save(CurrentMarketPrice.builder()
-                            .type("stock")
+                            .type(AssetType.STOCK)
                             .symbol(symbol)
                             .price(closePrice)
                             .build());
