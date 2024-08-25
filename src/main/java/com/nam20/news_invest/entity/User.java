@@ -1,6 +1,7 @@
 package com.nam20.news_invest.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -25,14 +26,12 @@ public class User implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 4 , message = "Name should have at least 4 characters")
     @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Size(min = 8 , message = "Password should have at least 8 characters")
     @Column(nullable = false)
     private String password;
 

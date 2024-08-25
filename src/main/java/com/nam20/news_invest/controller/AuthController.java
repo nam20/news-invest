@@ -1,9 +1,12 @@
 package com.nam20.news_invest.controller;
 
-import com.nam20.news_invest.dto.*;
-import com.nam20.news_invest.repository.UserRepository;
+import com.nam20.news_invest.dto.AuthResponse;
+import com.nam20.news_invest.dto.LoginRequest;
+import com.nam20.news_invest.dto.RegisterRequest;
+import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.security.JwtGenerator;
 import com.nam20.news_invest.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,13 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtGenerator jwtGenerator;
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
 
         UserResponse userResponse = userService.createUser(registerRequest);
         String token = retrieveToken(registerRequest.getName(), registerRequest.getPassword());
@@ -41,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
 
         String token = retrieveToken(loginRequest.getName(), loginRequest.getPassword());
         UserResponse userResponse = userService.retrieveUserByName(loginRequest.getName());
