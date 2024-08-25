@@ -18,7 +18,7 @@ public class AssetController {
     @GetMapping("/{portfolioId}/assets")
     public ResponseEntity<PaginationResponse<AssetResponse>> retrieveAssets(
             @PathVariable Long portfolioId,
-            @PathVariable(required = false) int page
+            @RequestParam(defaultValue = "0") int page
     ) {
         return ResponseEntity.ok(assetService.retrieveAssets(portfolioId, page, PAGE_SIZE));
     }
