@@ -6,6 +6,7 @@ import com.nam20.news_invest.entity.Asset;
 import com.nam20.news_invest.entity.Portfolio;
 import com.nam20.news_invest.entity.Trade;
 import com.nam20.news_invest.enums.AssetType;
+import com.nam20.news_invest.enums.TransactionType;
 import com.nam20.news_invest.exception.InsufficientBalanceException;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.mapper.TradeMapper;
@@ -44,7 +45,7 @@ public class TradeService {
                 .assetType(tradeAssetType)
                 .price(tradePrice)
                 .quantity(tradeQuantity)
-                .transactionType("BUY");
+                .transactionType(TransactionType.BUY);
 
         if (optionalAsset.isPresent()) {
             Asset existingAsset = optionalAsset.get();
@@ -111,7 +112,7 @@ public class TradeService {
                 .assetType(tradeAssetType)
                 .price(tradePrice)
                 .quantity(tradeQuantity)
-                .transactionType("SELL")
+                .transactionType(TransactionType.SELL)
                 .asset(asset)
                 .build();
 
