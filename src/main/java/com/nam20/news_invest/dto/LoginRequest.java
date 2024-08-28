@@ -17,7 +17,7 @@ public class LoginRequest {
     private final String name;
 
     @Pattern(
-            regexp = "^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$",
+            regexp = "^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$",
             message = "Password must be 8 to 20 characters long, containing at least one lowercase letter, one number, and one special character (#?!@$%^&*-)."
     )
     @NotBlank(message = "Password is required")
