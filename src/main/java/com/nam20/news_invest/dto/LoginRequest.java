@@ -11,15 +11,15 @@ public class LoginRequest {
 
     @Pattern(
             regexp = "^[a-zA-Z0-9]{4,20}$",
-            message = "Name must be 4 to 20 characters long, containing only alphabets and numbers."
+            message = "{authRequest.name.pattern}"
     )
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "{authRequest.name.required}")
     private final String name;
 
     @Pattern(
             regexp = "^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$",
-            message = "Password must be 8 to 20 characters long, containing at least one lowercase letter, one number, and one special character (#?!@$%^&*-)."
+            message = "{authRequest.password.pattern}"
     )
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = "{authRequest.password.required}")
     private final String password;
 }
