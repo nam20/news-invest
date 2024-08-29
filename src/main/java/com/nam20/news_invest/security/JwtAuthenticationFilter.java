@@ -1,25 +1,29 @@
 package com.nam20.news_invest.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.nam20.news_invest.entity.User;
+import com.nam20.news_invest.exception.ErrorDetails;
 import com.nam20.news_invest.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,22 +41,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = getJwtFromRequest(request);
 
-        if (StringUtils.hasText(token) && jwtGenerator.validateToken(token)) {
-            String username = jwtGenerator.getUsernameFromJWT(token);
+        try {
+            if (StringUtils.hasText(token) && jwtGenerator.validateToken(token)) {
+                String username = jwtGenerator.getUsernameFromJWT(token);
 
-            List<String> roles = jwtGenerator.getRolesFromJWT(token);
-            List<GrantedAuthority> authorities = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority(role.replace("ROLE_", "")))
-                    .collect(Collectors.toList());
+                List<String> roles = jwtGenerator.getRolesFromJWT(token);
+                List<GrantedAuthority> authorities = roles.stream()
+                        .map(role -> new SimpleGrantedAuthority(role.replace("ROLE_", "")))
+                        .collect(Collectors.toList());
 
-            User user = customUserDetailsService.loadUserByUsername(username);
+                User user = customUserDetailsService.loadUserByUsername(username);
 
-            UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(user, null, authorities);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(user, null, authorities);
 
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        } catch (AuthenticationCredentialsNotFoundException ex) {
+            handleException(response, ex);
         }
 
         filterChain.doFilter(request, response);
@@ -67,5 +75,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private void handleException(HttpServletResponse response, Exception ex) throws IOException {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                null
+        );
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write(objectMapper.writeValueAsString(errorDetails));
+        response.getWriter().flush();
     }
 }
