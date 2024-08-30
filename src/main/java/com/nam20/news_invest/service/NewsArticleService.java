@@ -24,7 +24,7 @@ public class NewsArticleService {
     private final PaginationMetaMapper paginationMetaMapper;
 
     public PaginationResponse<NewsArticleResponse> retrieveNewsArticles(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
         Page<NewsArticle> newsArticlesPage = newsArticleRepository.findAll(pageable);
 
         List<NewsArticleResponse> newsArticleResponses = newsArticlesPage

@@ -24,7 +24,7 @@ public class DailyStockMetricService {
     private final PaginationMetaMapper paginationMetaMapper;
 
     public PaginationResponse<DailyMarketPriceResponse> retrieveDailyStockPrices(String symbol, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
         Page<DailyStockMetric> dailyStockMetricsPage = dailyStockMetricRepository.findBySymbol(symbol, pageable);
 
         List<DailyMarketPriceResponse> dailyMarketPriceResponses = dailyStockMetricsPage

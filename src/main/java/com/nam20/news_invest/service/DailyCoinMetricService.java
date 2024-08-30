@@ -24,7 +24,7 @@ public class DailyCoinMetricService {
     private final PaginationMetaMapper paginationMetaMapper;
 
     public PaginationResponse<DailyMarketPriceResponse> retrieveDailyCoinMarketData(String symbol, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
         Page<DailyCoinMetric> dailyCoinMetricsPage = dailyCoinMetricRepository.findByName(symbol, pageable);
 
         List<DailyMarketPriceResponse> dailyMarketPriceResponses = dailyCoinMetricsPage
