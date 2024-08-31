@@ -9,7 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "daily_coin_metrics")
+@Table(
+        name = "daily_coin_metrics",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name", "date"})
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DailyCoinMetric {
@@ -20,7 +25,6 @@ public class DailyCoinMetric {
 
     private String name;
 
-    @Column(unique = true)
     private LocalDate date;
 
     private Double price;
