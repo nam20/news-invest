@@ -9,10 +9,13 @@ import com.nam20.news_invest.repository.DailyCoinMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +58,21 @@ public class CoinGeckoCryptoService {
                         .build())
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .map(jsonNode -> convertToDailyCoinMarketData(jsonNode, coinName))
-                .flux()
+                .flatMapMany(jsonNode -> {
+                    List<HashMap<String, Object>> marketChartList = new ArrayList<>();
+
+                    for (int i = 0; i < jsonNode.get("prices").size() - 1; i++) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("timestamp", jsonNode.get("prices").get(i).get(0).asLong());
+                        map.put("price", jsonNode.get("prices").get(i).get(1).asDouble());
+                        map.put("market_cap", jsonNode.get("market_caps").get(i).get(1).asDouble());
+                        map.put("total_volume", jsonNode.get("total_volumes").get(i).get(1).asDouble());
+                        marketChartList.add(map);
+                    }
+
+                    return Flux.fromIterable(marketChartList);
+                })
+                .map(entry -> convertToDailyCoinMarketData(entry, coinName))
                 .collectList()
                 .doOnNext(dailyCoinMarketData -> {
                     dailyCoinMetricRepository.saveAll(dailyCoinMarketData);
@@ -65,19 +81,17 @@ public class CoinGeckoCryptoService {
                 .subscribe();
     }
 
-    private DailyCoinMetric convertToDailyCoinMarketData(JsonNode jsonNode, String coinName) {
-        long unixTimestamp = jsonNode.get("prices").get(0).get(0).asLong();
-
-        LocalDate date = Instant.ofEpochMilli(unixTimestamp)
+    private DailyCoinMetric convertToDailyCoinMarketData(HashMap<String, Object> marketChart, String coinName) {
+        LocalDate date = Instant.ofEpochMilli((Long) marketChart.get("timestamp"))
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
         return DailyCoinMetric.builder()
                 .name(coinName)
                 .date(date)
-                .price(jsonNode.get("prices").get(0).get(1).asDouble())
-                .marketCap(jsonNode.get("market_caps").get(0).get(1).asDouble())
-                .volume(jsonNode.get("total_volumes").get(0).get(1).asDouble())
+                .price((Double) marketChart.get("price"))
+                .marketCap((Double) marketChart.get("market_cap"))
+                .volume((Double) marketChart.get("total_volume"))
                 .build();
     }
 
