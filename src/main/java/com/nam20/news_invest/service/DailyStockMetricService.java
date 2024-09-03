@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,9 +24,11 @@ public class DailyStockMetricService {
     private final DailyMarketPriceMapper dailyMarketPriceMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
-    public PaginationResponse<DailyMarketPriceResponse> retrieveDailyStockPrices(String symbol, int page, int size) {
+    public PaginationResponse<DailyMarketPriceResponse> retrieveDailyStockPrices(
+            String symbol, int page, int size, LocalDate startDate, LocalDate endDate
+    ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
-        Page<DailyStockMetric> dailyStockMetricsPage = dailyStockMetricRepository.findBySymbol(symbol, pageable);
+        Page<DailyStockMetric> dailyStockMetricsPage = dailyStockMetricRepository.findBySymbolAndDateBetween(symbol, startDate, endDate, pageable);
 
         List<DailyMarketPriceResponse> dailyMarketPriceResponses = dailyStockMetricsPage
                 .getContent()
