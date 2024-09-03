@@ -27,7 +27,7 @@ public class DailyCoinMetricService {
     public PaginationResponse<DailyMarketPriceResponse> retrieveDailyCoinMarketData(
             String symbol, int page, int size, LocalDate startDate, LocalDate endDate
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").ascending());
         Page<DailyCoinMetric> dailyCoinMetricsPage = dailyCoinMetricRepository.findByNameAndDateBetween(symbol, startDate, endDate, pageable);
 
         List<DailyMarketPriceResponse> dailyMarketPriceResponses = dailyCoinMetricsPage

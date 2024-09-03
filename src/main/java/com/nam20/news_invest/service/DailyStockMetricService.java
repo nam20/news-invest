@@ -27,7 +27,7 @@ public class DailyStockMetricService {
     public PaginationResponse<DailyMarketPriceResponse> retrieveDailyStockPrices(
             String symbol, int page, int size, LocalDate startDate, LocalDate endDate
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").ascending());
         Page<DailyStockMetric> dailyStockMetricsPage = dailyStockMetricRepository.findBySymbolAndDateBetween(symbol, startDate, endDate, pageable);
 
         List<DailyMarketPriceResponse> dailyMarketPriceResponses = dailyStockMetricsPage
