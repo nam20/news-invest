@@ -16,5 +16,4 @@ public class PostResponse {
     private String category;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CommentResponse> comments;
 }

@@ -15,5 +15,4 @@ public class CommentResponse {
     private String createdAt;
     private String updatedAt;
     private Long parentCommentId;
-    private List<CommentResponse> replies;
 }
