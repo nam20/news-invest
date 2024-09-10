@@ -45,15 +45,28 @@ public class Comment {
     @JsonIgnore
     private Comment parentComment;
 
+    @Column(nullable = false)
+    private Integer depth;
+
+    @Column(nullable = false)
+    private Integer groupNumber;
+
+    @Column(nullable = false)
+    private Integer groupOrder;
+
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies;
 
     @Builder
-    public Comment(User user, Post post, String content, Comment parentComment) {
+    public Comment(User user, Post post, String content, Comment parentComment,
+                   Integer depth, Integer groupNumber, Integer groupOrder) {
         this.user = user;
         this.post = post;
         this.content = content;
         this.parentComment = parentComment;
+        this.depth = depth;
+        this.groupNumber = groupNumber;
+        this.groupOrder = groupOrder;
     }
 
     public void updateContent(String content) {

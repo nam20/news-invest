@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,9 @@ public class CommentService {
     private final PaginationMetaMapper paginationMetaMapper;
 
     public PaginationResponse<CommentResponse> retrieveComments(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("groupNumber").descending()
+                .and(Sort.by("groupOrder")));
+
         Page<Comment> commentsPage = commentRepository.findAll(pageable);
 
         List<CommentResponse> commentResponses = commentsPage
@@ -80,9 +83,27 @@ public class CommentService {
 
         if (parentCommentId != null) {
             Comment parentComment = commentRepository.findById(parentCommentId)
-                    .orElse(null);
+                    .orElseThrow(() -> new ResourceNotFoundException("id " + parentCommentId));
 
             commentBuilder.parentComment(parentComment);
+            commentBuilder.depth(parentComment.getDepth() + 1);
+            commentBuilder.groupNumber(parentComment.getGroupNumber());
+
+            int lastGroupOrder = commentRepository.findMaxGroupOrderByParentCommentId(parentCommentId)
+                    .orElse(parentComment.getGroupOrder());
+
+            commentBuilder.groupOrder(lastGroupOrder + 1);
+
+            commentRepository.incrementGroupOrder(parentComment.getGroupNumber(), lastGroupOrder);
+
+        } else {
+            int nextGroupNumber = commentRepository.findTopByOrderByGroupNumberDesc()
+                    .map(lastOrderComment -> lastOrderComment.getGroupNumber() + 1)
+                    .orElse(0);
+
+            commentBuilder.groupNumber(nextGroupNumber);
+            commentBuilder.depth(0);
+            commentBuilder.groupOrder(0);
         }
 
         Comment comment = commentBuilder.build();
