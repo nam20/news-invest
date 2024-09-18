@@ -11,6 +11,7 @@ import java.util.List;
 public class PostResponse {
     private Long id;
     private Long userId;
+    private String userName;
     private String title;
     private String content;
     private String category;

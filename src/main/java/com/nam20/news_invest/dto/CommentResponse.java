@@ -10,6 +10,7 @@ import java.util.List;
 public class CommentResponse {
     private Long id;
     private Long userId;
+    private String userName;
     private Long postId;
     private String content;
     private String createdAt;
