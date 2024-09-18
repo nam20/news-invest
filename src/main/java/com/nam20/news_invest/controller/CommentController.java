@@ -20,13 +20,6 @@ public class CommentController {
     private final CommentService commentService;
     private static final int PAGE_SIZE = 20;
 
-    @GetMapping
-    public ResponseEntity<PaginationResponse<CommentResponse>> retrieveComments(
-            @RequestParam(defaultValue = "0") int page
-    ) {
-        return ResponseEntity.ok(commentService.retrieveComments(page, PAGE_SIZE));
-    }
-
     @GetMapping("/post/{postId}")
     public ResponseEntity<PaginationResponse<CommentResponse>> retrieveCommentsByPost(
             @PathVariable Long postId,
