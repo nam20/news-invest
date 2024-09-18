@@ -48,6 +48,22 @@ public class CommentService {
                 paginationMetaMapper.toPaginationMeta(commentsPage));
     }
 
+    public PaginationResponse<CommentResponse> retrieveCommentsByPost(Long postId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("groupNumber").descending()
+                .and(Sort.by("groupOrder")));
+
+        Page<Comment> commentsPage = commentRepository.findByPostId(postId, pageable);
+
+        List<CommentResponse> commentResponses = commentsPage
+                .getContent()
+                .stream()
+                .map(commentMapper::toDto)
+                .toList();
+
+        return new PaginationResponse<>(commentResponses,
+                paginationMetaMapper.toPaginationMeta(commentsPage));
+    }
+
     public CommentResponse retrieveComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));

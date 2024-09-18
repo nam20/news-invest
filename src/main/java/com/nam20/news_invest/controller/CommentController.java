@@ -27,6 +27,14 @@ public class CommentController {
         return ResponseEntity.ok(commentService.retrieveComments(page, PAGE_SIZE));
     }
 
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<PaginationResponse<CommentResponse>> retrieveCommentsByPost(
+            @PathVariable Long postId,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return ResponseEntity.ok(commentService.retrieveCommentsByPost(postId, page, PAGE_SIZE));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CommentResponse> retrieveComment(@PathVariable Long id) {
         return ResponseEntity.ok(commentService.retrieveComment(id));
