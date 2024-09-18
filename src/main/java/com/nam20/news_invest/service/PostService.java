@@ -1,7 +1,6 @@
 package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.dto.PaginationResponse;
-import com.nam20.news_invest.dto.PostDetailResponse;
 import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.entity.Post;
@@ -42,11 +41,11 @@ public class PostService {
                 paginationMetaMapper.toPaginationMeta(postsPage));
     }
 
-    public PostDetailResponse retrievePost(Long id) {
+    public PostResponse retrievePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
-        return postMapper.toDetailDto(post);
+        return postMapper.toDto(post);
     }
 
     public PaginationResponse<PostResponse> retrievePostsByUserId(Long userId, int page, int size) {

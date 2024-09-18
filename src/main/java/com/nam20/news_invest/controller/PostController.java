@@ -1,7 +1,6 @@
 package com.nam20.news_invest.controller;
 
 import com.nam20.news_invest.dto.PaginationResponse;
-import com.nam20.news_invest.dto.PostDetailResponse;
 import com.nam20.news_invest.dto.PostRequest;
 import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.entity.User;
@@ -28,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostDetailResponse> retrievePost(@PathVariable Long id) {
+    public ResponseEntity<PostResponse> retrievePost(@PathVariable Long id) {
         return ResponseEntity.ok(postService.retrievePost(id));
     }
 
