@@ -110,6 +110,9 @@ public class CommentService {
 
         Comment savedComment = commentRepository.save(comment);
 
+        post.incrementCommentCount();
+        postRepository.save(post);
+
         return commentMapper.toDto(savedComment);
     }
 
@@ -137,5 +140,9 @@ public class CommentService {
         }
 
         commentRepository.deleteById(id);
+
+        Post post = comment.getPost();
+        post.decrementCommentCount();
+        postRepository.save(post);
     }
 }

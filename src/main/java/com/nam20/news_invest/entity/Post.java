@@ -35,6 +35,9 @@ public class Post {
     @Column(nullable = false)
     private String category;
 
+    @Column(nullable = false)
+    private int commentCount = 0;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -56,5 +59,15 @@ public class Post {
         this.title = title;
         this.content = content;
         this.category = category;
+    }
+
+    public void incrementCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decrementCommentCount() {
+        if (this.commentCount > 0) {
+            this.commentCount--;
+        }
     }
 }

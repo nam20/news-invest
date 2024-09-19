@@ -15,6 +15,7 @@ public class PostResponse {
     private String title;
     private String content;
     private String category;
+    private int commentCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
