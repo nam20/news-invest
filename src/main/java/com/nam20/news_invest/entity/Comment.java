@@ -46,20 +46,20 @@ public class Comment {
     private Comment parentComment;
 
     @Column(nullable = false)
-    private Integer depth;
+    private int depth;
 
     @Column(nullable = false)
-    private Integer groupNumber;
+    private int groupNumber;
 
     @Column(nullable = false)
-    private Integer groupOrder;
+    private int groupOrder;
 
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> replies;
 
     @Builder
     public Comment(User user, Post post, String content, Comment parentComment,
-                   Integer depth, Integer groupNumber, Integer groupOrder) {
+                   int depth, int groupNumber, int groupOrder) {
         this.user = user;
         this.post = post;
         this.content = content;

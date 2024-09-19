@@ -25,8 +25,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             "WHERE c.group_number = :groupNumber AND c.group_order > :groupOrder",
             nativeQuery = true)
     void incrementGroupOrder(
-            @Param("groupNumber") Integer groupNumber,
-            @Param("groupOrder") Integer groupOrder
+            @Param("groupNumber") int groupNumber,
+            @Param("groupOrder") int groupOrder
     );
 
     @Query(value = "SELECT MAX(c.group_order) FROM comments c WHERE c.parent_comment_id = :parentCommentId",
