@@ -10,6 +10,8 @@ import com.nam20.news_invest.security.JwtGenerator;
 import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,6 +31,7 @@ public class AuthController {
     private final JwtGenerator jwtGenerator;
     private final UserService userService;
     private final UserMapper userMapper;
+    private static final int COOKIE_MAX_AGE = 60 * 60 * 24;
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
@@ -54,6 +57,14 @@ public class AuthController {
 
         String token = jwtGenerator.generateToken(authentication);
 
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(COOKIE_MAX_AGE)
+                .sameSite("Strict")
+                .build();
+
         UserResponse userResponse;
 
         if (preCreatedUserResponse == null) {
@@ -68,6 +79,8 @@ public class AuthController {
                 .token(token)
                 .build();
 
-        return ResponseEntity.ok(authResponse);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(authResponse);
     }
 }
