@@ -62,6 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (AuthenticationCredentialsNotFoundException ex) {
             handleException(response, ex);
+            return;
         }
 
         filterChain.doFilter(request, response);
