@@ -45,6 +45,21 @@ public class AuthController {
                 loginRequest.getName(), loginRequest.getPassword(), null);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout() {
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
+    }
+
     private ResponseEntity<UserResponse> authenticateAndGenerateResponse(
             String username, String password, UserResponse preCreatedUserResponse
     ) {
