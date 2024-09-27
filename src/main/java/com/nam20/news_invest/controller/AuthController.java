@@ -1,6 +1,5 @@
 package com.nam20.news_invest.controller;
 
-import com.nam20.news_invest.dto.AuthResponse;
 import com.nam20.news_invest.dto.LoginRequest;
 import com.nam20.news_invest.dto.RegisterRequest;
 import com.nam20.news_invest.dto.UserResponse;
@@ -34,19 +33,19 @@ public class AuthController {
     private static final int COOKIE_MAX_AGE = 60 * 60 * 24;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         UserResponse userResponse = userService.createUser(registerRequest);
         return authenticateAndGenerateResponse(
                 registerRequest.getName(), registerRequest.getPassword(), userResponse);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return authenticateAndGenerateResponse(
                 loginRequest.getName(), loginRequest.getPassword(), null);
     }
 
-    private ResponseEntity<AuthResponse> authenticateAndGenerateResponse(
+    private ResponseEntity<UserResponse> authenticateAndGenerateResponse(
             String username, String password, UserResponse preCreatedUserResponse
     ) {
         Authentication authentication = authenticationManager.authenticate(
@@ -74,13 +73,8 @@ public class AuthController {
             userResponse = preCreatedUserResponse;
         }
 
-        AuthResponse authResponse = AuthResponse.builder()
-                .user(userResponse)
-                .token(token)
-                .build();
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(authResponse);
+                .body(userResponse);
     }
 }
