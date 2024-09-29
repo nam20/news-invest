@@ -2,6 +2,9 @@ package com.nam20.news_invest.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +19,12 @@ import java.util.List;
 public class JwtGenerator {
 
     private static final int JWT_EXPIRATION = 24 * 60 * 60 * 1000;
-    private static final SecretKey secretKey = Jwts.SIG.HS512.key().build();
+
+    private final SecretKey secretKey;
+
+    public JwtGenerator(@Value("${jwt.secret}") String jwtSecret) {
+        secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
 
     public String generateToken(Authentication authentication) {
 
@@ -33,7 +41,7 @@ public class JwtGenerator {
                 .claim("roles", roles)
                 .issuedAt(currentDate)
                 .expiration(expireDate)
-                .signWith(secretKey)
+                .signWith(secretKey, Jwts.SIG.HS512)
                 .compact();
     }
 
