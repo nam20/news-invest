@@ -18,87 +18,48 @@ import java.util.Map;
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorDetails> handleAllException(Exception ex, WebRequest request) throws Exception {
-
+    private ResponseEntity<ErrorDetails> createErrorResponse(Exception ex, HttpStatus status) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                status.value(),
                 ex.getMessage(),
                 null
         );
+        return new ResponseEntity<>(errorDetails, status);
+    }
 
-        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(Exception.class)
+    public final ResponseEntity<ErrorDetails> handleAllException(Exception ex, WebRequest request) throws Exception {
+        return createErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public final ResponseEntity<ErrorDetails> handleBadCredentialsException(Exception ex, WebRequest request) throws Exception {
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.UNAUTHORIZED.value(),
-                ex.getMessage(),
-                null
-        );
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
+        return createErrorResponse(ex, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public final ResponseEntity<ErrorDetails> handleUserNotFoundException(Exception ex, WebRequest request) throws Exception {
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                ex.getMessage(),
-                null
-        );
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        return createErrorResponse(ex, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedOwnershipException.class)
     public final ResponseEntity<ErrorDetails> handleUnauthorizedOwnershipException(Exception ex, WebRequest request) throws Exception {
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.FORBIDDEN.value(),
-                ex.getMessage(),
-                null
-        );
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+        return createErrorResponse(ex, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(AlreadyExistsException.class)
     public final ResponseEntity<ErrorDetails> handleAlreadyExistsException(Exception ex, WebRequest request) throws Exception {
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                ex.getMessage(),
-                null
-        );
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+        return createErrorResponse(ex, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
     public final ResponseEntity<ErrorDetails> handleInsufficientBalanceException(Exception ex, WebRequest request) throws Exception {
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
-                null
-        );
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+        return createErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(fieldError -> {
