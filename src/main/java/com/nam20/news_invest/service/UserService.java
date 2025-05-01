@@ -54,11 +54,11 @@ public class UserService {
     public UserResponse createUser(RegisterRequest registerRequest) {
 
         if (userRepository.existsByName(registerRequest.getName())) {
-            throw new AlreadyExistsException("name is taken");
+            throw new AlreadyExistsException("이미 사용 중인 이름입니다.");
         }
 
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new AlreadyExistsException("email is taken");
+            throw new AlreadyExistsException("이미 등록된 이메일 주소입니다.");
         }
 
         User user = User.builder()

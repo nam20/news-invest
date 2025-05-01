@@ -92,7 +92,10 @@ public class TradeService {
 
         Asset asset = assetRepository.findByPortfolioIdAndSymbolAndType(
                 portfolioId, tradeSymbol, tradeAssetType)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "portfolioId: " + portfolioId + 
+                        ", tradeSymbol: " + tradeSymbol + 
+                        ", tradeAssetType: " + tradeAssetType));
 
         Double existingQuantity = asset.getQuantity();
         Double existingAveragePurchasePrice = asset.getAveragePurchasePrice();
@@ -100,7 +103,7 @@ public class TradeService {
         double totalQuantity = existingQuantity - tradeQuantity;
 
         if (totalQuantity < 0) {
-            throw new InsufficientBalanceException("Not enough quantity to sell");
+            throw new InsufficientBalanceException("판매 가능한 수량이 부족합니다.");
         }
 
         Double averagePurchasePrice =
