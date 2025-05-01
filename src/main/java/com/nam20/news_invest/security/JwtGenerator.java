@@ -1,9 +1,9 @@
 package com.nam20.news_invest.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -64,9 +64,16 @@ public class JwtGenerator {
                     .parseSignedClaims(token);
 
             return true;
+        } catch (ExpiredJwtException ex) {
+            throw new AuthenticationCredentialsNotFoundException("JWT 토큰이 만료되었습니다.", ex);
+        } catch (MalformedJwtException ex) {
+            throw new AuthenticationCredentialsNotFoundException("JWT 토큰이 올바르지 않은 형식입니다.", ex);
+        } catch (UnsupportedJwtException ex) {
+            throw new AuthenticationCredentialsNotFoundException("지원하지 않는 JWT 토큰입니다.", ex);
+        } catch (SignatureException ex) {
+            throw new AuthenticationCredentialsNotFoundException("JWT 토큰의 서명이 유효하지 않습니다.", ex);
         } catch (Exception ex) {
-            throw new AuthenticationCredentialsNotFoundException("JWT was expired or incorrect",
-                    ex.fillInStackTrace());
+            throw new AuthenticationCredentialsNotFoundException("JWT 토큰 검증 중 오류가 발생했습니다: " + ex.getMessage(), ex);
         }
     }
 
