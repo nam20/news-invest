@@ -101,6 +101,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json");
         response.getWriter().write(objectMapper.writeValueAsString(errorDetails));
         response.getWriter().flush();
