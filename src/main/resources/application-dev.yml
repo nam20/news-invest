@@ -36,6 +36,20 @@ spring:
   template:
     provider:
       cache: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: 
+              - profile
+              - email
+            redirect-uri: http://localhost:8080/auth/google/callback
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
       
 server:
   port: ${SERVER_PORT}
