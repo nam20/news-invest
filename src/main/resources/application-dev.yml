@@ -50,7 +50,9 @@ spring:
         provider:
           google:
             issuer-uri: https://accounts.google.com
-      
+    authorizedRedirectUris:
+      - http://localhost:3000/oauth2/redirect
+
 server:
   port: ${SERVER_PORT}
 

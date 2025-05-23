@@ -1,5 +1,8 @@
 package com.nam20.news_invest.security;
 
+import com.nam20.news_invest.security.oauth2.CustomOAuth2UserService;
+import com.nam20.news_invest.security.oauth2.OAuth2SuccessHandler;
+import com.nam20.news_invest.security.oauth2.OAuth2FailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +27,9 @@ public class SecurityConfiguration {
 
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Value("${CORS_ALLOWED_ORIGINS}")
     private String corsAllowedOrigins;
@@ -34,7 +40,7 @@ public class SecurityConfiguration {
                 auth -> auth
                         .requestMatchers(HttpMethod.GET)
                         .permitAll()
-                        .requestMatchers("/api/auth/**")
+                        .requestMatchers("/api/auth/**", "/oauth2/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated()
@@ -45,6 +51,13 @@ public class SecurityConfiguration {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.csrf(c -> c.disable());
+
+        http.oauth2Login(
+                oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
+        );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
