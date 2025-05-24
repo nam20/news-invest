@@ -1,7 +1,7 @@
 package com.nam20.news_invest.security.oauth2;
 
 import com.nam20.news_invest.entity.User; // Assuming your User entity is here
-import com.nam20.news_invest.service.UserService; // Assuming you have a UserService
+import com.nam20.news_invest.service.OAuth2UserService; // Import the new OAuth2UserService
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -15,10 +15,10 @@ import java.util.Map;
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final UserService userService; // Inject your UserService
+    private final OAuth2UserService oauth2UserService; // Inject the new OAuth2UserService
 
-    public CustomOAuth2UserService(UserService userService) {
-        this.userService = userService;
+    public CustomOAuth2UserService(OAuth2UserService oauth2UserService) {
+        this.oauth2UserService = oauth2UserService;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         // Save or update user information in your database
-        User user = userService.saveOrUpdateUser(id, email, name, pictureUrl, registrationId);
+        User user = oauth2UserService.saveOrUpdateUser(id, email, name, pictureUrl, registrationId);
 
         // Create and return CustomOAuth2User
         // You might need to adapt this if your User entity doesn't match CustomOAuth2User fields exactly
