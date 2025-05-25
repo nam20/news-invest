@@ -6,7 +6,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -24,9 +22,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtGenerator jwtGenerator;
     private final RequestCache requestCache = new HttpSessionRequestCache(); // Use default request cache
-
-    @Value("${spring.security.authorized-redirect-uris}")
-    private List<String> authorizedRedirectUris;
+    private final OAuth2Properties oauth2Properties;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -83,7 +79,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private boolean isAuthorizedRedirectUri(String uri) {
         try {
             URI clientRedirectUri = new URI(uri);
-            return authorizedRedirectUris.stream().anyMatch(authorizedUri -> {
+            return oauth2Properties.getAuthorizedRedirectUris().stream().anyMatch(authorizedUri -> {
                 URI authorizedClientUri = URI.create(authorizedUri);
                 // Simple check: scheme, host, and port must match
                 // More complex validation might be needed depending on requirements
