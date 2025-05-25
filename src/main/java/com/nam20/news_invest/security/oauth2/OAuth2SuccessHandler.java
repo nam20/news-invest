@@ -25,7 +25,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtGenerator jwtGenerator;
     private final RequestCache requestCache = new HttpSessionRequestCache(); // Use default request cache
 
-    @Value("${spring.security.authorizedRedirectUris}")
+    @Value("${spring.security.authorized-redirect-uris}")
     private List<String> authorizedRedirectUris;
 
     @Override
