@@ -1,7 +1,7 @@
-package com.nam20.news_invest.security.oauth2;
+package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.entity.User; // Assuming your User entity is here
-import com.nam20.news_invest.service.OAuth2UserService; // Import the new OAuth2UserService
+import com.nam20.news_invest.security.oauth2.CustomOAuth2User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

@@ -1,6 +1,6 @@
 package com.nam20.news_invest.security;
 
-import com.nam20.news_invest.security.oauth2.CustomOAuth2UserService;
+import com.nam20.news_invest.service.CustomOAuth2UserService;
 import com.nam20.news_invest.security.oauth2.OAuth2SuccessHandler;
 import com.nam20.news_invest.security.oauth2.OAuth2FailureHandler;
 import lombok.RequiredArgsConstructor;
