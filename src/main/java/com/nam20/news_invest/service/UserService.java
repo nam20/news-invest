@@ -101,7 +101,9 @@ public class UserService {
 
         existingUser.setName(requestDto.getName());
         existingUser.setEmail(requestDto.getEmail());
-        existingUser.setPassword(requestDto.getPassword());
+        if (requestDto.getPassword() != null && !requestDto.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        }
 
         User updatedUser = userRepository.save(existingUser);
 
