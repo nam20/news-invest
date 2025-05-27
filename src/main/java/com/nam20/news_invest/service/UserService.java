@@ -5,12 +5,14 @@ import com.nam20.news_invest.dto.RegisterRequest;
 import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.dto.UserUpdateRequest;
 import com.nam20.news_invest.entity.User;
+import com.nam20.news_invest.entity.Role;
 import com.nam20.news_invest.exception.AlreadyExistsException;
 import com.nam20.news_invest.exception.ResourceNotFoundException;
 import com.nam20.news_invest.exception.UnauthorizedOwnershipException;
 import com.nam20.news_invest.mapper.PaginationMetaMapper;
 import com.nam20.news_invest.mapper.UserMapper;
 import com.nam20.news_invest.repository.UserRepository;
+import com.nam20.news_invest.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final PaginationMetaMapper paginationMetaMapper;
+    private final RoleRepository roleRepository;
 
     public PaginationResponse<UserResponse> retrieveUsers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
@@ -61,11 +65,14 @@ public class UserService {
             throw new AlreadyExistsException("이미 등록된 이메일 주소입니다.");
         }
 
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
+                                        .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found"));
+
         User user = User.builder()
                 .name(registerRequest.getName())
                 .email(registerRequest.getEmail())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                .role("ROLE_USER")
+                .roles(Collections.singletonList(defaultRole))
                 .build();
 
         User savedUser = userRepository.save(user);

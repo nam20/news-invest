@@ -12,14 +12,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(exclude = {"posts", "comments"})
+@ToString(exclude = {"posts", "comments", "roles"})
 @EntityListeners(AuditingEntityListener.class)
 public class User implements UserDetails {
 
@@ -40,8 +42,14 @@ public class User implements UserDetails {
 
     private String profilePictureUrl; // Store profile picture URL from OAuth2
 
-    // Role for authorization (e.g., "ROLE_USER", "ROLE_ADMIN")
-    private String role;
+    // Many-to-Many relationship with Role
+    @ManyToMany(fetch = FetchType.EAGER) // Eager fetch is common for roles
+    @JoinTable(
+        name = "user_roles", // Name of the join table
+        joinColumns = @JoinColumn(name = "user_id"), // Foreign key in join table referencing User
+        inverseJoinColumns = @JoinColumn(name = "role_id") // Foreign key in join table referencing Role
+    )
+    private List<Role> roles = new ArrayList<>(); // Initialize roles list
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -56,22 +64,39 @@ public class User implements UserDetails {
     private List<Comment> comments;
 
     @Builder
-    public User(String name, String email, String password, String oauth2Id, String profilePictureUrl, String role) {
+    // Modified constructor to accept List of Role objects or individual roles
+    public User(String name, String email, String password, String oauth2Id, String profilePictureUrl, List<Role> roles) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.oauth2Id = oauth2Id;
         this.profilePictureUrl = profilePictureUrl;
-        this.role = role != null ? role : "ROLE_USER"; // Default role to ROLE_USER
+        if (roles != null) {
+            this.roles = roles;
+        } else {
+            this.roles = new ArrayList<>();
+        }
+    }
+
+    // Helper method to add a single role
+    public void addRole(Role role) {
+        if (this.roles == null) {
+            this.roles = new ArrayList<>();
+        }
+        if (!this.roles.contains(role)) {
+            this.roles.add(role);
+        }
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return authorities based on the user's role
-        if (this.role == null) {
-            return Collections.emptyList(); // Or return default role if role cannot be null
+        // Return authorities based on the user's roles
+        if (this.roles == null || this.roles.isEmpty()) {
+            return Collections.emptyList();
         }
-        return Collections.singletonList(new SimpleGrantedAuthority(this.role));
+        return this.roles.stream()
+                   .map(role -> new SimpleGrantedAuthority(role.getName()))
+                   .collect(Collectors.toList());
     }
 
     @Override
