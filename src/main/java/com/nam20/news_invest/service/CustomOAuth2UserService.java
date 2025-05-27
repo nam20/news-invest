@@ -8,18 +8,17 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
+import com.nam20.news_invest.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
-    private final OAuth2UserService oauth2UserService; // Inject the new OAuth2UserService
-
-    public CustomOAuth2UserService(OAuth2UserService oauth2UserService) {
-        this.oauth2UserService = oauth2UserService;
-    }
+    private final UserRepository userRepository; // Add UserRepository dependency
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -43,18 +42,35 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // Handle other providers if needed
         }
 
-        // Save or update user information in your database
-        User user = oauth2UserService.saveOrUpdateUser(id, email, name, pictureUrl, registrationId);
+        Optional<User> existingUserOptional = userRepository.findByOauth2Id(id);
+
+        User user;
+        if (existingUserOptional.isPresent()) {
+            user = existingUserOptional.get();
+            user.setName(name);
+            user.setEmail(email);
+            user.setProfilePictureUrl(pictureUrl);
+        } else {
+            user = User.builder()
+                    .oauth2Id(id)
+                    .name(name)
+                    .email(email)
+                    .profilePictureUrl(pictureUrl)
+                    .role("ROLE_USER") // Assuming default role
+                    .build();
+        }
+
+        User savedUser = userRepository.save(user);
 
         // Create and return CustomOAuth2User
         // You might need to adapt this if your User entity doesn't match CustomOAuth2User fields exactly
         return new CustomOAuth2User(
                 registrationId,
-                user.getOauth2Id(), // Assuming your User entity stores the OAuth2 ID
-                user.getEmail(),
-                user.getName(),
-                user.getProfilePictureUrl(), // Assuming your User entity stores the picture URL
-                Collections.singleton(new SimpleGrantedAuthority(user.getRole())), // Assuming your User entity stores the role
+                savedUser.getOauth2Id(),
+                savedUser.getEmail(),
+                savedUser.getName(),
+                savedUser.getProfilePictureUrl(),
+                Collections.singleton(new SimpleGrantedAuthority(savedUser.getRole())),
                 attributes
         );
     }
