@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Collections;
@@ -80,24 +81,18 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public void deleteUser(Long id, User currentUser) {
-        User user = userRepository.findById(id)
+        userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
-
-        if (!user.getId().equals(currentUser.getId())) {
-            throw new UnauthorizedOwnershipException("id: " + id);
-        }
 
         userRepository.deleteById(id);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public UserResponse updateUser(Long id, UserUpdateRequest requestDto, User currentUser) {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
-
-        if (!currentUser.getId().equals(existingUser.getId())) {
-            throw new UnauthorizedOwnershipException("id: " + id);
-        }
 
         existingUser.setName(requestDto.getName());
         existingUser.setEmail(requestDto.getEmail());
