@@ -3,6 +3,7 @@ package com.nam20.news_invest.security;
 import com.nam20.news_invest.service.CustomOAuth2UserService;
 import com.nam20.news_invest.security.oauth2.OAuth2SuccessHandler;
 import com.nam20.news_invest.security.oauth2.OAuth2FailureHandler;
+import com.nam20.news_invest.exception.CustomAccessDeniedHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,7 @@ public class SecurityConfiguration {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Value("${CORS_ALLOWED_ORIGINS}")
     private String corsAllowedOrigins;
@@ -49,7 +51,10 @@ public class SecurityConfiguration {
                         .authenticated()
         );
 
-        http.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(jwtAuthEntryPoint));
+        http.exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint(jwtAuthEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
 
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
