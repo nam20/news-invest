@@ -18,7 +18,8 @@ import java.util.List;
 @Component
 public class JwtGenerator {
 
-    private static final int JWT_EXPIRATION = 24 * 60 * 60 * 1000;
+    private static final int ACCESS_TOKEN_EXPIRATION = 24 * 60 * 60 * 1000;
+    private static final int REFRESH_TOKEN_EXPIRATION = 7 * 24 * 60 * 60 * 1000;
 
     private final SecretKey secretKey;
 
@@ -30,7 +31,7 @@ public class JwtGenerator {
 
         String username = authentication.getName();
         Date currentDate = new Date();
-        Date expireDate = new Date(currentDate.getTime() + JWT_EXPIRATION);
+        Date expireDate = new Date(currentDate.getTime() + ACCESS_TOKEN_EXPIRATION);
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         List<String> roles = authorities.stream().map(GrantedAuthority::getAuthority).toList();
@@ -84,5 +85,13 @@ public class JwtGenerator {
                 .parseSignedClaims(token).getPayload();
 
         return claims.get("roles", List.class);
+    }
+
+    public static int getRefreshTokenExpiration() {
+        return REFRESH_TOKEN_EXPIRATION / 1000;
+    }
+
+    public static int getAccessTokenExpiration() {
+        return ACCESS_TOKEN_EXPIRATION / 1000;
     }
 }

@@ -1,11 +1,15 @@
 package com.nam20.news_invest.security.oauth2;
 
+import com.nam20.news_invest.entity.RefreshToken;
+import com.nam20.news_invest.entity.User;
 import com.nam20.news_invest.security.JwtGenerator;
+import com.nam20.news_invest.service.RefreshTokenService;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
@@ -23,20 +27,42 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final JwtGenerator jwtGenerator;
     private final RequestCache requestCache = new HttpSessionRequestCache(); // Use default request cache
     private final OAuth2Properties oauth2Properties;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        // Generate JWT Token for the authenticated OAuth2 user
-        String token = jwtGenerator.generateToken(authentication);
+        User user = (User) authentication.getPrincipal();
 
-        // Add JWT Token to an HTTP-only cookie
-        Cookie jwtCookie = new Cookie("jwt", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/"); // Set path to root so it's available everywhere
-        jwtCookie.setMaxAge(24 * 60 * 60); // Set expiry (e.g., 1 day)
+        // Generate JWT Access Token
+        String accessToken = jwtGenerator.generateToken(authentication);
 
-        response.addCookie(jwtCookie);
+        // 리프레시 토큰 생성 및 저장
+        RefreshToken refreshTokenEntity = refreshTokenService.generateRefreshToken(user.getId());
+        String refreshToken = refreshTokenEntity.getToken();
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
+                .httpOnly(true)
+                .secure(true) // HTTPS 사용 시 true 설정
+                .path("/")
+                .maxAge(JwtGenerator.getAccessTokenExpiration())
+                .sameSite("Strict") // SameSite 설정
+                .domain(null) // 적절한 도메인 설정 (null 또는 "localhost" 등)
+                .build();
+
+        // Add Refresh Token to an HTTP-only cookie using ResponseCookie
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true) // HTTPS 사용 시 true 설정
+                .path("/")
+                .maxAge(JwtGenerator.getRefreshTokenExpiration()) // 리프레시 토큰 만료 시간 (초 단위)
+                .sameSite("Strict") // SameSite 설정
+                 .domain(null) // 적절한 도메인 설정
+                .build();
+
+        // Add cookies to the response headers
+        response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         // Determine the redirect URL
         String targetUrl = determineTargetUrl(request, response, authentication);

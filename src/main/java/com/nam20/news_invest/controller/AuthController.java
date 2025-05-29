@@ -3,9 +3,12 @@ package com.nam20.news_invest.controller;
 import com.nam20.news_invest.dto.LoginRequest;
 import com.nam20.news_invest.dto.RegisterRequest;
 import com.nam20.news_invest.dto.UserResponse;
+import com.nam20.news_invest.entity.RefreshToken;
 import com.nam20.news_invest.entity.User;
+import com.nam20.news_invest.exception.TokenRefreshException;
 import com.nam20.news_invest.mapper.UserMapper;
 import com.nam20.news_invest.security.JwtGenerator;
+import com.nam20.news_invest.service.RefreshTokenService;
 import com.nam20.news_invest.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +31,12 @@ public class AuthController {
     private final JwtGenerator jwtGenerator;
     private final UserService userService;
     private final UserMapper userMapper;
-    private static final int COOKIE_MAX_AGE = 60 * 60 * 24;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         UserResponse userResponse = userService.createUser(registerRequest);
+        // 회원가입 후 자동 로그인 및 토큰 발급
         return authenticateAndGenerateResponse(
                 registerRequest.getName(), registerRequest.getPassword(), userResponse);
     }
@@ -44,8 +48,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+    public ResponseEntity<Void> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        // 액세스 토큰 쿠키 무효화
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", "")
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
@@ -53,8 +58,23 @@ public class AuthController {
                 .sameSite("Strict")
                 .build();
 
+        // 리프레시 토큰 쿠키 무효화
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+
+        // 저장소에서 리프레시 토큰 삭제
+        if (refreshToken != null) {
+            refreshTokenService.deleteByToken(refreshToken);
+        }
+
         return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .build();
     }
 
@@ -67,6 +87,51 @@ public class AuthController {
         }
     }
 
+    // 토큰 갱신 엔드포인트
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.badRequest().body("리프레시 토큰이 제공되지 않았습니다.");
+        }
+
+        return refreshTokenService.findByToken(refreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    // 새 액세스 토큰 생성
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                     SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                    String newAccessToken = jwtGenerator.generateToken(authentication);
+
+                    // 새 액세스 토큰 쿠키 생성
+                    ResponseCookie newAccessCookie = ResponseCookie.from("accessToken", newAccessToken)
+                            .httpOnly(true)
+                            .secure(true)
+                            .path("/")
+                            .maxAge(JwtGenerator.getAccessTokenExpiration())
+                            .sameSite("Strict")
+                            .build();
+
+                    // 필요에 따라 rolling refresh token 구현:
+                    // 1. 기존 리프레시 토큰 삭제
+                    // refreshTokenService.deleteByToken(refreshToken);
+                    // 2. 새 리프레시 토큰 생성 및 저장
+                    // RefreshToken newRefreshTokenEntity = refreshTokenService.generateRefreshToken(user.getId());
+                    // String newRefreshToken = newRefreshTokenEntity.getToken();
+                    // 3. 새 리프레시 토큰 쿠키 생성하여 응답에 포함
+
+                    UserResponse userResponse = userMapper.toDto(user);
+
+                    return ResponseEntity.ok()
+                             .header(HttpHeaders.SET_COOKIE, newAccessCookie.toString())
+                            // .header(HttpHeaders.SET_COOKIE, newRefreshCookie.toString())
+                            .body(userResponse);
+                })
+                .orElseThrow(() -> new TokenRefreshException(refreshToken, "유효하지 않은 리프레시 토큰입니다. 다시 로그인해주세요."));
+    }
+
+
     private ResponseEntity<UserResponse> authenticateAndGenerateResponse(
             String username, String password, UserResponse preCreatedUserResponse
     ) {
@@ -76,27 +141,44 @@ public class AuthController {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = jwtGenerator.generateToken(authentication);
+        User user = (User) authentication.getPrincipal();
 
-        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+        // 액세스 토큰 생성
+        String accessToken = jwtGenerator.generateToken(authentication);
+
+        // 리프레시 토큰 생성 및 저장
+        RefreshToken refreshTokenEntity = refreshTokenService.generateRefreshToken(user.getId());
+        String refreshToken = refreshTokenEntity.getToken();
+
+        // 액세스 토큰 쿠키 생성
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(COOKIE_MAX_AGE)
+                .maxAge(JwtGenerator.getAccessTokenExpiration())
+                .sameSite("Strict")
+                .build();
+
+        // 리프레시 토큰 쿠키 생성
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                 .maxAge(JwtGenerator.getRefreshTokenExpiration()) // 리프레시 토큰 만료 시간 (초 단위)
                 .sameSite("Strict")
                 .build();
 
         UserResponse userResponse;
 
         if (preCreatedUserResponse == null) {
-            User user = (User) authentication.getPrincipal();
             userResponse = userMapper.toDto(user);
         } else {
             userResponse = preCreatedUserResponse;
         }
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(userResponse);
     }
 }
