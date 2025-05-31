@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class NewsArticleService {
     private final NewsArticleMapper newsArticleMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
+    @Cacheable(value = "newsArticles", key = "#page + '-' + #size")
     public PaginationResponse<NewsArticleResponse> retrieveNewsArticles(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("publishedAt").descending());
         Page<NewsArticle> newsArticlesPage = newsArticleRepository.findAll(pageable);

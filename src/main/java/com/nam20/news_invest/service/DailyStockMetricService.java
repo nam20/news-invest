@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,6 +25,7 @@ public class DailyStockMetricService {
     private final DailyMarketPriceMapper dailyMarketPriceMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
+    @Cacheable(value = "dailyStockPrices", key = "#symbol + '-' + #page + '-' + #size + '-' + #startDate + '-' + #endDate")
     public PaginationResponse<DailyMarketPriceResponse> retrieveDailyStockPrices(
             String symbol, int page, int size, LocalDate startDate, LocalDate endDate
     ) {

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CurrentMarketPriceService {
     private final CurrentMarketPriceMapper currentMarketPriceMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
+    @Cacheable(value = "currentMarketPrices", key = "#page + '-' + #size")
     public PaginationResponse<CurrentMarketPriceResponse> retrieveCurrentMarketPrices(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<CurrentMarketPrice> currentMarketPricesPage = currentMarketPriceRepository.findAll(pageable);
@@ -39,6 +41,7 @@ public class CurrentMarketPriceService {
                 paginationMetaMapper.toPaginationMeta(currentMarketPricesPage));
     }
 
+    @Cacheable(value = "currentMarketPrice", key = "#type + '-' + #symbol")
     public CurrentMarketPriceResponse retrieveCurrentMarketPrice(AssetType type, String symbol) {
         CurrentMarketPrice currentMarketPrice = currentMarketPriceRepository.findByTypeAndSymbol(type, symbol)
                 .orElseThrow(() -> new ResourceNotFoundException("type: " + type + ", symbol: " + symbol));
