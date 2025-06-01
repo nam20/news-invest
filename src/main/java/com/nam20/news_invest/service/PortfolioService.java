@@ -15,6 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ public class PortfolioService {
     private final PortfolioMapper portfolioMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
+    @Cacheable(value = "portfolios", key = "#user.id + '_' + #page + '_' + #size")
     public PaginationResponse<PortfolioResponse> retrievePortfolios(User user, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Portfolio> portfoliosPage = portfolioRepository.findByUserId(user.getId(), pageable);
@@ -40,6 +43,7 @@ public class PortfolioService {
                 paginationMetaMapper.toPaginationMeta(portfoliosPage));
     }
 
+    @Cacheable(value = "portfolios", key = "#id")
     public PortfolioResponse retrievePortfolio(Long id) {
         Portfolio portfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
@@ -57,6 +61,7 @@ public class PortfolioService {
         return portfolioMapper.toDto(savedPortfolio);
     }
 
+    @CachePut(value = "portfolios", key = "#id")
     public PortfolioResponse updatePortfolio(Long id, PortfolioRequest portfolioRequest) {
         Portfolio existingPortfolio = portfolioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
