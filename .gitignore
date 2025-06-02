@@ -65,3 +65,4 @@ tasks/
 .cursor/
 .roo/
 scripts/prd.txt
+.taskmaster/
