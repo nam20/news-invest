@@ -12,7 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 
 @Service
@@ -23,6 +23,7 @@ public class EconomicIndicatorService {
     private final EconomicIndicatorMapper economicIndicatorMapper;
     private final PaginationMetaMapper paginationMetaMapper;
 
+    @Cacheable(value = "economicIndicatorData", key = "#page + '-' + #size")
     public PaginationResponse<EconomicIndicatorResponse> retrieveFredEconomicData(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<EconomicIndicator> economicIndicatorsPage = economicIndicatorRepository.findAll(pageable);
