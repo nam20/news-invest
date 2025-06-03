@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class BingNewsService {
         this.deeplTranslateService = deeplTranslateService;
     }
 
+    @CacheEvict(value = "newsArticles", allEntries = true)
     public void processAllSearchQueries() {
         searchQueries.forEach(this::getAndSaveNews);
     }
