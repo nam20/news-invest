@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.EconomicIndicator;
 import com.nam20.news_invest.repository.EconomicIndicatorRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -28,6 +29,7 @@ public class FredEconomicDataService {
         this.economicIndicatorRepository = economicIndicatorRepository;
     }
 
+    @CacheEvict(value = "economicIndicatorData", allEntries = true)
     public void processAllSeries() {
         seriesIds.forEach(this::getAndSaveEconomicData);
     }

@@ -7,6 +7,7 @@ import com.nam20.news_invest.enums.AssetType;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
 import com.nam20.news_invest.repository.DailyStockMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -36,6 +37,7 @@ public class AlphaVantageStockService {
         this.currentMarketPriceRepository = currentMarketPriceRepository;
     }
 
+    @CacheEvict(value = "dailyStockPrices", allEntries = true)
     public void processAllSymbols() {
         symbols.forEach(this::getAndSaveStockData);
     }
