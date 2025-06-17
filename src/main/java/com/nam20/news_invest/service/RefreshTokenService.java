@@ -8,6 +8,7 @@ import com.nam20.news_invest.repository.UserRepository;
 import com.nam20.news_invest.security.JwtGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -21,7 +22,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public RefreshToken generateRefreshToken(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -51,7 +52,7 @@ public class RefreshTokenService {
         return token;
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void deleteByToken(String token) {
         refreshTokenRepository.findByToken(token).ifPresent(refreshTokenRepository::delete);
     }
