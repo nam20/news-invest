@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -62,6 +63,7 @@ public class PostService {
                 paginationMetaMapper.toPaginationMeta(postsPage));
     }
 
+    @Transactional
     public PostResponse createPost(PostRequest createRequest, User user) {
         Post post = Post.builder()
                 .title(createRequest.getTitle())
@@ -75,8 +77,8 @@ public class PostService {
         return postMapper.toDto(savedPost);
     }
 
+    @Transactional
     public void deletePost(Long id, User user) {
-
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));
 
@@ -87,6 +89,7 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+    @Transactional
     public PostResponse updatePost(Long id, PostRequest updateRequest, User user) {
         Post existingPost = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id: " + id));

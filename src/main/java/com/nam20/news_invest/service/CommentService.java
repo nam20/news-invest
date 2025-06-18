@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -69,6 +70,7 @@ public class CommentService {
                 paginationMetaMapper.toPaginationMeta(commentsPage));
     }
 
+    @Transactional
     public CommentResponse createComment(CommentCreateRequest requestDto, User user) {
         Long postId = requestDto.getPostId();
         Long parentCommentId = requestDto.getParentCommentId();
@@ -116,6 +118,7 @@ public class CommentService {
         return commentMapper.toDto(savedComment);
     }
 
+    @Transactional
     public CommentResponse updateComment(Long id, CommentUpdateRequest requestDto, User user) {
         Comment existingComment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));
@@ -131,6 +134,7 @@ public class CommentService {
         return commentMapper.toDto(updatedComment);
     }
 
+    @Transactional
     public void deleteComment(Long id, User user) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + id));

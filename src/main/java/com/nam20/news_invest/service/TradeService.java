@@ -15,6 +15,7 @@ import com.nam20.news_invest.repository.PortfolioRepository;
 import com.nam20.news_invest.repository.TradeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,6 +29,7 @@ public class TradeService {
     private final PortfolioRepository portfolioRepository;
     private final TradeMapper tradeMapper;
 
+    @Transactional
     public TradeResponse buyAsset(Long portfolioId, TradeRequest tradeRequest) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + portfolioId));
@@ -84,6 +86,7 @@ public class TradeService {
         return tradeMapper.toDto(savedTrade);
     }
 
+    @Transactional
     public TradeResponse sellAsset(Long portfolioId, TradeRequest tradeRequest) {
         String tradeSymbol = tradeRequest.getSymbol();
         AssetType tradeAssetType = tradeRequest.getAssetType();

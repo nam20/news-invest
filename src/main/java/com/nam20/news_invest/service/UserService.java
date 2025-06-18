@@ -21,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Collections;
@@ -56,6 +57,7 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional
     public UserResponse createUser(RegisterRequest registerRequest) {
 
         if (userRepository.existsByName(registerRequest.getName())) {
@@ -81,6 +83,7 @@ public class UserService {
         return userMapper.toDto(savedUser);
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public void deleteUser(Long id, User currentUser) {
         userRepository.findById(id)
@@ -89,6 +92,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional
     @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public UserResponse updateUser(Long id, UserUpdateRequest requestDto, User currentUser) {
         User existingUser = userRepository.findById(id)

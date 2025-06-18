@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -51,6 +52,7 @@ public class PortfolioService {
         return portfolioMapper.toDto(portfolio);
     }
 
+    @Transactional
     public PortfolioResponse createPortfolio(PortfolioRequest portfolioRequest) {
         Portfolio portfolio = Portfolio.builder()
                 .name(portfolioRequest.getName())
