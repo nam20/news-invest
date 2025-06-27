@@ -1,31 +1,15 @@
 package com.nam20.news_invest.mapper;
 
 import com.nam20.news_invest.dto.PaginationMeta;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
 
-@Component
-public class PaginationMetaMapper {
+@Mapper(componentModel = "spring")
+public interface PaginationMetaMapper {
 
-    private final ModelMapper modelMapper;
-
-    public PaginationMetaMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-
-        modelMapper.addMappings(new PropertyMap<Page<?>, PaginationMeta>() {
-            @Override
-            protected void configure() {
-                map().setTotalPages(source.getTotalPages());
-                map().setTotalElements(source.getTotalElements());
-                map().setCurrentPage(source.getNumber());
-                map().setPageSize(source.getSize());
-            }
-        });
-    }
-
-    public PaginationMeta toPaginationMeta(Page<?> page) {
-        return modelMapper.map(page, PaginationMeta.class);
-    }
+    @Mapping(source = "number", target = "currentPage")
+    @Mapping(source = "size", target = "pageSize")
+    PaginationMeta toPaginationMeta(Page<?> page);
 }

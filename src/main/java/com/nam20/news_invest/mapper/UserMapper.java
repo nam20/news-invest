@@ -2,17 +2,10 @@ package com.nam20.news_invest.mapper;
 
 import com.nam20.news_invest.dto.UserResponse;
 import com.nam20.news_invest.entity.User;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class UserMapper {
+import org.mapstruct.Mapper;
 
-    private final ModelMapper modelMapper;
-
-    public UserResponse toDto(User user) {
-        return modelMapper.map(user, UserResponse.class);
-    }
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    UserResponse toDto(User user);
 }

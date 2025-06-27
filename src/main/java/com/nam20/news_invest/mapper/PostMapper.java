@@ -2,25 +2,13 @@ package com.nam20.news_invest.mapper;
 
 import com.nam20.news_invest.dto.PostResponse;
 import com.nam20.news_invest.entity.Post;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
 
-@Component
-@RequiredArgsConstructor
-public class PostMapper {
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-    private final ModelMapper modelMapper;
+@Mapper(componentModel = "spring")
+public interface PostMapper {
 
-    @PostConstruct
-    public void configureMapper() {
-        modelMapper.typeMap(Post.class, PostResponse.class).addMappings(mapper -> {
-           mapper.map(src -> src.getUser().getName(), PostResponse::setUserName);
-        });
-    }
-
-    public PostResponse toDto(Post post) {
-        return modelMapper.map(post, PostResponse.class);
-    }
+    @Mapping(source = "user.name", target = "userName")
+    PostResponse toDto(Post post);
 }
