@@ -1,9 +1,10 @@
 package com.nam20.news_invest.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nam20.news_invest.dto.NewsAnalysisResponse;
-import com.nam20.news_invest.dto.InvestmentStrategyResponse;
-import com.nam20.news_invest.dto.RiskAnalysisResponse;
+import com.nam20.news_invest.dto.ai.InvestmentStrategyResponse;
+import com.nam20.news_invest.dto.ai.NewsAnalysisResponse;
+import com.nam20.news_invest.dto.ai.RiskAnalysisResponse;
+
 import org.springframework.stereotype.Component;
 
 @Component

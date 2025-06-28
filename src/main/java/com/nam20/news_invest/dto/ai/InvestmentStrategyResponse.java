@@ -1,4 +1,4 @@
-package com.nam20.news_invest.dto;
+package com.nam20.news_invest.dto.ai;
 
 import lombok.*;
 import java.util.List;
