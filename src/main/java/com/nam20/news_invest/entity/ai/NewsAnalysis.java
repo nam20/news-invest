@@ -1,5 +1,6 @@
 package com.nam20.news_invest.entity.ai;
 
+import com.nam20.news_invest.entity.NewsArticle;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -17,6 +18,10 @@ public class NewsAnalysis {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "news_article_id", nullable = false)
+    private NewsArticle newsArticle;
 
     // 생성 시각
     @CreatedDate
