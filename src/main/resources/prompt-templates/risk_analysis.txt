@@ -3,7 +3,9 @@
 
 # CONTEXT
 - **사용자 포트폴리오**: {userPortfolioDetails}
-- **포트폴리오 관련 최신 부정적 뉴스**: {relevantNegativeNews}
+- **최신 시장 데이터**:
+  - 주요 뉴스 요약: {marketNewsSummary}
+  - 주요 경제 지표: {keyEconomicIndicators}
 - **현재 시장 변동성 지수(VIX)**: {vixIndex}
 
 # TASK
