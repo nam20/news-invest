@@ -41,7 +41,7 @@ public class NewsAnalysis {
 
     // 종목별 영향 예측
     @OneToMany(mappedBy = "newsAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StockImpactPredictions> stockImpactPredictions;
+    private List<StockImpactPrediction> stockImpactPredictions;
 
     // --- Embedded/Entity 내부 클래스들 ---
 
@@ -82,7 +82,7 @@ public class NewsAnalysis {
     @Table(name = "news_analysis_stock_impact_predictions")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class StockImpactPredictions {
+    public static class StockImpactPrediction {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;

@@ -33,15 +33,15 @@ public class RiskAnalysis {
 
     // 주요 리스크 요인
     @OneToMany(mappedBy = "riskAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RiskFactors> riskFactors;
+    private List<RiskFactor> riskFactors;
 
     // 종목별 리스크 기여도
     @OneToMany(mappedBy = "riskAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RiskContributions> riskContributions;
+    private List<RiskContribution> riskContributions;
 
     // 리스크 완화 방안
     @OneToMany(mappedBy = "riskAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RiskMitigationPlans> riskMitigationPlans;
+    private List<RiskMitigationPlan> riskMitigationPlans;
 
     @Embeddable
     @Getter @Setter
@@ -54,7 +54,7 @@ public class RiskAnalysis {
     @Table(name = "risk_analysis_risk_factors")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class RiskFactors {
+    public static class RiskFactor {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -69,7 +69,7 @@ public class RiskAnalysis {
     @Table(name = "risk_analysis_risk_contributions")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class RiskContributions {
+    public static class RiskContribution {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -85,7 +85,7 @@ public class RiskAnalysis {
     @Table(name = "risk_analysis_risk_mitigation_plans")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class RiskMitigationPlans {
+    public static class RiskMitigationPlan {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;

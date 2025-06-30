@@ -29,11 +29,11 @@ public class InvestmentStrategy {
 
     // 신규 추천 종목
     @OneToMany(mappedBy = "investmentStrategy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Recommendations> recommendations;
+    private List<Recommendation> recommendations;
 
     // 포트폴리오 조정안
     @OneToMany(mappedBy = "investmentStrategy", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PortfolioAdjustments> portfolioAdjustments;
+    private List<PortfolioAdjustment> portfolioAdjustments;
 
     // 전략적 근거
     @Lob
@@ -43,7 +43,7 @@ public class InvestmentStrategy {
     @Table(name = "investment_strategy_recommendations")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Recommendations {
+    public static class Recommendation {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
@@ -60,7 +60,7 @@ public class InvestmentStrategy {
     @Table(name = "investment_strategy_portfolio_adjustments")
     @Getter @Setter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class PortfolioAdjustments {
+    public static class PortfolioAdjustment {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
