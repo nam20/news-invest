@@ -10,7 +10,7 @@ public class NewsAnalysisResponse {
     private List<String> summary;
     private SentimentAnalysis sentimentAnalysis;
     private AffectedEntities affectedEntities;
-    private List<StockImpactPrediction> stockImpactPrediction;
+    private List<StockImpactPrediction> stockImpactPredictions;
 
     @Getter
     @Setter

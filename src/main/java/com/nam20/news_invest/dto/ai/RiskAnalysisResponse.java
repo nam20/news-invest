@@ -9,8 +9,8 @@ import java.util.List;
 public class RiskAnalysisResponse {
     private OverallRiskAnalysis overallRiskAnalysis;
     private List<RiskFactor> topRiskFactors;
-    private List<RiskContribution> riskContribution;
-    private List<RiskMitigationPlan> riskMitigationPlan;
+    private List<RiskContribution> riskContributions;
+    private List<RiskMitigationPlan> riskMitigationPlans;
 
     @Getter
     @Setter

@@ -18,7 +18,7 @@
 결과는 반드시 다음 JSON 형식에 맞춰 한국어로 작성해 주세요.
 
 {
-  "newRecommendations": [
+  "recommendations": [
     {
       "ticker": "추천 종목 코드",
       "name": "추천 종목명",

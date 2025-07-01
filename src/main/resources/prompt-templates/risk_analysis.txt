@@ -33,11 +33,11 @@
       "description": "해당 리스크에 대한 설명"
     }
   ],
-  "riskContribution": [
+  "riskContributions": [
       {"ticker": "종목코드1", "contribution": "높음", "reason": "기여도가 높은 이유"},
       {"ticker": "종목코드2", "contribution": "중간", "reason": "기여도가 중간인 이유"}
   ],
-  "riskMitigationPlan": [
+  "riskMitigationPlans": [
     {
       "action": "실행 방안 1",
       "details": "실행 방안에 대한 구체적인 설명"

@@ -7,7 +7,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class InvestmentStrategyResponse {
-    private List<Recommendation> newRecommendations;
+    private List<Recommendation> recommendations;
     private List<PortfolioAdjustment> portfolioAdjustments;
     private String strategicRationale;
 

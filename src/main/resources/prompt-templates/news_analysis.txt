@@ -40,7 +40,7 @@
     "companies": ["기업명1", "기업명2"],
     "industries": ["산업명1", "산업명2"]
   },
-  "stockImpactPrediction": [
+  "stockImpactPredictions": [
     {
       "companyName": "기업명",
       "shortTerm": {
