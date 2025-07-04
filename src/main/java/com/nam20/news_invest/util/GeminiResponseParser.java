@@ -12,17 +12,29 @@ public class GeminiResponseParser {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 뉴스 분석 응답 파싱
-    public NewsAnalysisResponse parseNewsAnalysis(String json) throws Exception {
-        return objectMapper.readValue(json, NewsAnalysisResponse.class);
+    public NewsAnalysisResponse parseNewsAnalysis(String json) {
+        try {
+            return objectMapper.readValue(json, NewsAnalysisResponse.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("AI 응답 파싱 실패", e);
+        }
     }
 
     // 투자 전략 응답 파싱
-    public InvestmentStrategyResponse parseInvestmentStrategy(String json) throws Exception {
-        return objectMapper.readValue(json, InvestmentStrategyResponse.class);
+    public InvestmentStrategyResponse parseInvestmentStrategy(String json) {
+        try {
+            return objectMapper.readValue(json, InvestmentStrategyResponse.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("AI 응답 파싱 실패", e);
+        }
     }
 
     // 리스크 분석 응답 파싱
-    public RiskAnalysisResponse parseRiskAnalysis(String json) throws Exception {
-        return objectMapper.readValue(json, RiskAnalysisResponse.class);
+    public RiskAnalysisResponse parseRiskAnalysis(String json) {
+        try {
+            return objectMapper.readValue(json, RiskAnalysisResponse.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("AI 응답 파싱 실패", e);
+        }
     }
 } 

@@ -30,7 +30,7 @@ public class RiskAnalysisService {
      * @return 저장된 RiskAnalysis 엔티티
      */
     @Transactional
-    public RiskAnalysis analyzeAndSave(Map<String, String> variables, Portfolio portfolio) throws Exception {
+    public RiskAnalysis analyzeAndSave(Map<String, String> variables, Portfolio portfolio) {
         String prompt = promptTemplateService.createRiskAnalysisPrompt(variables);
 
         String response = geminiApiClient.generateContent(prompt);

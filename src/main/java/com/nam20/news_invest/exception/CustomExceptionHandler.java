@@ -58,6 +58,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return createErrorResponse(ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public final ResponseEntity<ErrorDetails> handleIllegalArgumentException(Exception ex, WebRequest request) throws Exception {
+        return createErrorResponse(ex, HttpStatus.BAD_GATEWAY);
+    }
+
+    @ExceptionHandler(ExternalApiException.class)
+    public final ResponseEntity<ErrorDetails> handleExternalApiException(Exception ex, WebRequest request) throws Exception {
+        return createErrorResponse(ex, HttpStatus.BAD_GATEWAY);
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String, String> errors = new HashMap<>();

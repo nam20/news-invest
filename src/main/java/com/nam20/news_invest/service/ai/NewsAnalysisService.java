@@ -30,7 +30,7 @@ public class NewsAnalysisService {
      * @return 저장된 NewsAnalysis 엔티티
      */
     @Transactional
-    public NewsAnalysis analyzeAndSave(Map<String, String> variables, NewsArticle newsArticle) throws Exception {
+    public NewsAnalysis analyzeAndSave(Map<String, String> variables, NewsArticle newsArticle) {
         String prompt = promptTemplateService.createNewsAnalysisPrompt(variables);
 
         String response = geminiApiClient.generateContent(prompt);

@@ -30,7 +30,7 @@ public class InvestmentStrategyService {
      * @return 저장된 InvestmentStrategy 엔티티
      */
     @Transactional
-    public InvestmentStrategy analyzeAndSave(Map<String, String> variables, Portfolio portfolio) throws Exception {
+    public InvestmentStrategy analyzeAndSave(Map<String, String> variables, Portfolio portfolio) {
         String prompt = promptTemplateService.createInvestmentStrategyPrompt(variables);
 
         String response = geminiApiClient.generateContent(prompt);
