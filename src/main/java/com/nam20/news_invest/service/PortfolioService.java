@@ -24,6 +24,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -92,26 +93,30 @@ public class PortfolioService {
     /**
      * 주어진 포트폴리오 ID와 프롬프트 변수로 AI 투자 전략을 생성 및 저장
      * @param portfolioId 분석할 포트폴리오 ID
-     * @param variables 프롬프트에 사용할 변수 맵
      * @return 생성된 InvestmentStrategy 엔티티
      */
-    public InvestmentStrategy analyzeInvestmentStrategy(Long portfolioId, Map<String, String> variables) {
+    public InvestmentStrategy analyzeInvestmentStrategy(Long portfolioId) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + portfolioId));
 
+        // TODO: variables에 값 채워넣기
+        Map<String, String> variables = new HashMap<>(); 
+        
         return investmentStrategyService.analyzeAndSave(variables, portfolio);
     }
 
     /**
      * 주어진 포트폴리오 ID와 프롬프트 변수로 AI 리스크 분석을 생성 및 저장
      * @param portfolioId 분석할 포트폴리오 ID
-     * @param variables 프롬프트에 사용할 변수 맵
      * @return 생성된 RiskAnalysis 엔티티
      */
-    public RiskAnalysis analyzeRiskAnalysis(Long portfolioId, Map<String, String> variables) {
+    public RiskAnalysis analyzeRiskAnalysis(Long portfolioId) {
         Portfolio portfolio = portfolioRepository.findById(portfolioId)
                 .orElseThrow(() -> new ResourceNotFoundException("id " + portfolioId));
-                
+
+        // TODO: variables에 값 채워넣기
+        Map<String, String> variables = new HashMap<>(); 
+
         return riskAnalysisService.analyzeAndSave(variables, portfolio);
     }
 }

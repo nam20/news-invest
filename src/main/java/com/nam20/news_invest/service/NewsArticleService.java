@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -46,15 +47,17 @@ public class NewsArticleService {
     }
 
     /**
-     * 주어진 뉴스 기사 ID와 프롬프트 변수로 AI 분석 결과를 생성 및 저장
+     * 주어진 뉴스 기사 ID로 AI 분석 결과를 생성 및 저장
      * @param newsArticleId 분석할 뉴스 기사 ID
-     * @param variables 프롬프트에 사용할 변수 맵
      * @return 생성된 NewsAnalysis 엔티티
      */
-    public NewsAnalysis analyzeNewsArticle(Long newsArticleId, Map<String, String> variables) {
+    public NewsAnalysis analyzeNewsArticle(Long newsArticleId) {
         NewsArticle newsArticle = newsArticleRepository.findById(newsArticleId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 ID의 뉴스 기사가 존재하지 않습니다: " + newsArticleId));
-                
+        
+        // TODO: variables에 값 채워넣기
+        Map<String, String> variables = new HashMap<>(); 
+        
         return newsAnalysisService.analyzeAndSave(variables, newsArticle);
     }
 }
