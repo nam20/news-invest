@@ -43,6 +43,10 @@ public class NewsAnalysis {
     @OneToMany(mappedBy = "newsAnalysis", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StockImpactPrediction> stockImpactPredictions;
 
+    // 키워드 리스트 추가
+    @ElementCollection
+    private List<Keyword> keywords;
+
     // --- Embedded/Entity 내부 클래스들 ---
 
     @Embeddable
@@ -102,5 +106,12 @@ public class NewsAnalysis {
         private String prediction;
         private int confidence;
         private String reason;
+    }
+
+    @Embeddable
+    @Getter @Setter
+    public static class Keyword {
+        private String keyword;
+        private int importance;
     }
 } 
