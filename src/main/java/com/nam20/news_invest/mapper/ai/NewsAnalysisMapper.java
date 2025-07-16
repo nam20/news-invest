@@ -25,6 +25,7 @@ public interface NewsAnalysisMapper {
     NewsAnalysis.AffectedEntities toEntity(NewsAnalysisResponse.AffectedEntities dto);
     NewsAnalysis.StockImpactPrediction toEntity(NewsAnalysisResponse.StockImpactPrediction dto);
     NewsAnalysis.PredictionDetail toEntity(NewsAnalysisResponse.PredictionDetail dto);
+    NewsAnalysis.Keyword toEntity(NewsAnalysisResponse.Keyword dto);
 
     // 리스트 매핑은 MapStruct가 자동 처리
     List<NewsAnalysis.StockImpactPrediction> toEntityList(List<NewsAnalysisResponse.StockImpactPrediction> dtoList);
