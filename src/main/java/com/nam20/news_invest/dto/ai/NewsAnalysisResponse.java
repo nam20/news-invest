@@ -12,6 +12,7 @@ public class NewsAnalysisResponse {
     private AffectedEntities affectedEntities;
     private List<StockImpactPrediction> stockImpactPredictions;
     private List<Keyword> keywords;
+    private List<InvestmentStrategy> investmentStrategies;
 
     @Getter
     @Setter
@@ -70,5 +71,15 @@ public class NewsAnalysisResponse {
     public static class Keyword {
         private String keyword;
         private int importance;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class InvestmentStrategy {
+        private String strategy;
+        private String action;
+        private String target;
+        private String reason;
     }
 } 

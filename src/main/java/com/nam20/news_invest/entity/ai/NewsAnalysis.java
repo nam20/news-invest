@@ -47,6 +47,10 @@ public class NewsAnalysis {
     @ElementCollection
     private List<Keyword> keywords;
 
+    // 투자 전략 리스트 추가
+    @ElementCollection
+    private List<InvestmentStrategy> investmentStrategies;
+
     // --- Embedded/Entity 내부 클래스들 ---
 
     @Embeddable
@@ -113,5 +117,14 @@ public class NewsAnalysis {
     public static class Keyword {
         private String keyword;
         private int importance;
+    }
+
+    @Embeddable
+    @Getter @Setter
+    public static class InvestmentStrategy {
+        private String strategy;
+        private String action;
+        private String target;
+        private String reason;
     }
 } 
