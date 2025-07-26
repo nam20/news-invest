@@ -15,6 +15,7 @@ public class PromptTemplateService {
     private static final String NEWS_ANALYSIS_TEMPLATE = "prompt-templates/news_analysis.txt";
     private static final String INVESTMENT_STRATEGY_TEMPLATE = "prompt-templates/investment_strategy.txt";
     private static final String RISK_ANALYSIS_TEMPLATE = "prompt-templates/risk_analysis.txt";
+    private static final String PRICE_PREDICTION_TEMPLATE = "prompt-templates/price_prediction.txt";
 
     /**
      * 템플릿 파일을 읽어와 변수 치환 후 프롬프트를 반환합니다.
@@ -63,5 +64,14 @@ public class PromptTemplateService {
      */
     public String createRiskAnalysisPrompt(Map<String, String> variables) {
         return loadAndFillTemplate(RISK_ANALYSIS_TEMPLATE, variables);
+    }
+
+    /**
+     * 가격 예측 프롬프트를 생성합니다.
+     * @param variables {targetAsset}, {historicalPrices}, {marketNewsSummary}, {economicIndicators} 등 변수 맵
+     * @return 완성된 프롬프트 문자열
+     */
+    public String createPricePredictionPrompt(Map<String, String> variables) {
+        return loadAndFillTemplate(PRICE_PREDICTION_TEMPLATE, variables);
     }
 } 
