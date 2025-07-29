@@ -1,15 +1,19 @@
 package com.nam20.news_invest.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "notifications")
 public class Notification {
 
@@ -23,7 +27,7 @@ public class Notification {
     @Column(nullable = false, length = 1000)
     private String content;
 
-    @CreationTimestamp
+    @CreatedDate
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -36,4 +40,12 @@ public class Notification {
     @Column(nullable = false)
     private String status; // e.g., "SENT", "UNREAD", "READ"
 
+    @Builder
+    public Notification(String title, String content, LocalDateTime expiresAt, NotificationType type, String status) {
+        this.title = title;
+        this.content = content;
+        this.expiresAt = expiresAt;
+        this.type = type;
+        this.status = status;
+    }
 }

@@ -1,12 +1,16 @@
 package com.nam20.news_invest.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "user_notification_settings")
 public class UserNotificationSetting {
 
@@ -30,4 +34,13 @@ public class UserNotificationSetting {
 
     // e.g., "WEB", "EMAIL", "PUSH"
     private String preferredChannel;
+
+    @Builder
+    public UserNotificationSetting(User user, NotificationType notificationType, boolean enabled, String frequency, String preferredChannel) {
+        this.user = user;
+        this.notificationType = notificationType;
+        this.enabled = enabled;
+        this.frequency = frequency;
+        this.preferredChannel = preferredChannel;
+    }
 }

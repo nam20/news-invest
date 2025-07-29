@@ -1,15 +1,19 @@
 package com.nam20.news_invest.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "notification_deliveries")
 public class NotificationDelivery {
 
@@ -28,7 +32,7 @@ public class NotificationDelivery {
     @Column(nullable = false)
     private String channel; // "WEB", "EMAIL", "PUSH"
 
-    @CreationTimestamp
+    @CreatedDate
     @Column(updatable = false)
     private LocalDateTime deliveredAt;
 
@@ -36,4 +40,12 @@ public class NotificationDelivery {
 
     @Column(nullable = false)
     private String status; // "DELIVERED", "FAILED", "READ"
+
+    @Builder
+    public NotificationDelivery(Notification notification, User user, String channel, String status) {
+        this.notification = notification;
+        this.user = user;
+        this.channel = channel;
+        this.status = status;
+    }
 }
