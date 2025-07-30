@@ -2,8 +2,10 @@ package com.nam20.news_invest.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.NewsArticle;
+import com.nam20.news_invest.event.NewsPublishedEvent;
 import com.nam20.news_invest.repository.NewsArticleRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -21,6 +23,7 @@ public class BingNewsService {
     private final WebClient webClient;
     private final NewsArticleRepository newsArticleRepository;
     private final DeeplTranslateService deeplTranslateService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${BING_NEWS_SEARCH_API_KEY}")
     private String apiKey;
@@ -29,10 +32,12 @@ public class BingNewsService {
 
     public BingNewsService(WebClient.Builder webClientBuilder,
                            NewsArticleRepository newsArticleRepository,
-                           DeeplTranslateService deeplTranslateService) {
+                           DeeplTranslateService deeplTranslateService,
+                           ApplicationEventPublisher eventPublisher) {
         this.webClient = webClientBuilder.baseUrl("https://api.bing.microsoft.com").build();
         this.newsArticleRepository = newsArticleRepository;
         this.deeplTranslateService = deeplTranslateService;
+        this.eventPublisher = eventPublisher;
     }
 
     @CacheEvict(value = "newsArticles", allEntries = true)
@@ -76,7 +81,10 @@ public class BingNewsService {
                             });
                 })
                 .collectList()
-                .doOnNext(newsArticleRepository::saveAll)
+                .doOnNext(newsArticles -> {
+                    newsArticleRepository.saveAll(newsArticles);
+                    newsArticles.forEach(article -> eventPublisher.publishEvent(new NewsPublishedEvent(this, article)));
+                })
                 .subscribe();
     }
 
