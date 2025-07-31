@@ -1,7 +1,7 @@
 package com.nam20.news_invest.service;
 
 import com.nam20.news_invest.entity.Notification;
-import com.nam20.news_invest.entity.NotificationType;
+import com.nam20.news_invest.enums.NotificationType;
 import com.nam20.news_invest.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

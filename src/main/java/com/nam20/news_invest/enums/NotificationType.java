@@ -1,4 +1,4 @@
-package com.nam20.news_invest.entity;
+package com.nam20.news_invest.enums;
 
 public enum NotificationType {
     NEWS,

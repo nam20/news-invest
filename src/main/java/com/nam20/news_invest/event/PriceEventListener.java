@@ -1,6 +1,6 @@
 package com.nam20.news_invest.event;
 
-import com.nam20.news_invest.entity.NotificationType;
+import com.nam20.news_invest.enums.NotificationType;
 import com.nam20.news_invest.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
