@@ -2,7 +2,7 @@ package com.nam20.news_invest.entity;
 
 public enum NotificationType {
     NEWS,
-    PRICE_ALERT,
+    PRICE_SPIKE,
     RISK_ANALYSIS,
     INVESTMENT_STRATEGY,
     SYSTEM

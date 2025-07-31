@@ -4,14 +4,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.nam20.news_invest.entity.CurrentMarketPrice;
 import com.nam20.news_invest.entity.DailyCoinMetric;
 import com.nam20.news_invest.enums.AssetType;
+import com.nam20.news_invest.event.PriceSpikeEvent;
 import com.nam20.news_invest.repository.CurrentMarketPriceRepository;
 import com.nam20.news_invest.repository.DailyCoinMetricRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -26,18 +30,22 @@ public class CoinGeckoCryptoService {
     private final WebClient webClient;
     private final DailyCoinMetricRepository dailyCoinMetricRepository;
     private final CurrentMarketPriceRepository currentMarketPriceRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${COIN_GECKO_API_KEY}")
     private String apiKey;
 
     private final List<String> coinNames = List.of("bitcoin");
+    private static final double SPIKE_THRESHOLD = 0.05; // 5%
 
     public CoinGeckoCryptoService(WebClient.Builder webClientBuilder,
                                   DailyCoinMetricRepository dailyCoinMetricRepository,
-                                  CurrentMarketPriceRepository currentMarketPriceRepository) {
+                                  CurrentMarketPriceRepository currentMarketPriceRepository,
+                                  ApplicationEventPublisher eventPublisher) {
         this.webClient = webClientBuilder.baseUrl("https://api.coingecko.com").build();
         this.dailyCoinMetricRepository = dailyCoinMetricRepository;
         this.currentMarketPriceRepository = currentMarketPriceRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @CacheEvict(value = "dailyCoinMarketData", allEntries = true)
@@ -106,18 +114,38 @@ public class CoinGeckoCryptoService {
         }
 
         DailyCoinMetric latestPrice = optionalLatestPrice.get();
-        Double price = latestPrice.getPrice();
+        BigDecimal newPrice = BigDecimal.valueOf(latestPrice.getPrice());
 
         currentMarketPriceRepository.findByTypeAndSymbol(AssetType.COIN, name).ifPresentOrElse(
                 currentMarketPrice -> {
-                    currentMarketPrice.updatePrice(price);
+                    BigDecimal oldPrice = BigDecimal.valueOf(currentMarketPrice.getPrice());
+                    currentMarketPrice.updatePrice(newPrice.doubleValue());
                     currentMarketPriceRepository.save(currentMarketPrice);
+
+                    // 가격 급등락 이벤트 감지 및 발행
+                    if (oldPrice.compareTo(BigDecimal.ZERO) > 0) {
+                        BigDecimal change = newPrice.subtract(oldPrice);
+                        BigDecimal percentageChangeDecimal = change.divide(oldPrice, 4, RoundingMode.HALF_UP);
+                        double percentageChange = percentageChangeDecimal.doubleValue();
+
+                        if (Math.abs(percentageChange) > SPIKE_THRESHOLD) {
+                            PriceSpikeEvent event = new PriceSpikeEvent(
+                                    this,
+                                    name,
+                                    AssetType.COIN,
+                                    oldPrice,
+                                    newPrice,
+                                    percentageChange * 100
+                            );
+                            eventPublisher.publishEvent(event);
+                        }
+                    }
                 },
                 () -> {
                     currentMarketPriceRepository.save(CurrentMarketPrice.builder()
                             .type(AssetType.COIN)
                             .symbol(name)
-                            .price(price)
+                            .price(newPrice.doubleValue())
                             .build());
                 }
         );
