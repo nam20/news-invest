@@ -56,6 +56,10 @@ spring:
 server:
   port: ${SERVER_PORT}
 
+risk:
+  score:
+    threshold: 80
+
 jwt:
   secret: 9wjkNIekKNkgEmffVBjI420dSdQPUl/QazhKfxRiWv/IX14lpWketLyI48dO2X1heNzNp5jELk2taqrk8P9Ndw==
 
