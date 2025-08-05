@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface EconomicIndicatorRepository extends JpaRepository<EconomicIndicator, Long> {
     Optional<EconomicIndicator> findByDate(LocalDate date);
+    Optional<EconomicIndicator> findTopByDateBeforeOrderByDateDesc(LocalDate date);
 }
